@@ -21,8 +21,6 @@ pub fn parse_questions(table: &ElementRef, round: Round) -> Vec<JeopardyQuestion
         .map(|c| c.inner_html())
         .collect();
 
-    println!("categories = {:?}", categories);
-
     let questions: Vec<String> = table
         .select(&question_selector)
         .map(|c| c.inner_html())
