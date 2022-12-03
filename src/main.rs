@@ -14,14 +14,15 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let jr_selector = Selector::parse("#jeopardy_round").unwrap();
     let djr_selector = Selector::parse("#double_jeopardy_round").unwrap();
-    // let fjr_selector = Selector::parse("#final_jeopardy_round").unwrap();
+    let fjr_selector = Selector::parse("#final_jeopardy_round").unwrap();
 
     let jr_table = document.select(&jr_selector).next().unwrap();
     let djr_table = document.select(&djr_selector).next().unwrap();
-    // let fjr_question = document.select(&fjr_selector).next().unwrap().inner_html();
+    let fjr_table = document.select(&fjr_selector).next().unwrap();
 
     let jr_questions: Vec<JeopardyQuestion> = parse_questions(&jr_table, Round::Jeopardy);
     let djr_questions: Vec<JeopardyQuestion> = parse_questions(&djr_table, Round::DoubleJeopardy);
+    let fjr_question = parse_questions(&fjr_table, Round::FinalJeopardy);
 
     for question in jr_questions {
         println!("{:?}", question);
@@ -30,6 +31,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
     for question in djr_questions {
         println!("{:?}", question);
     }
+
+    println!("fjr = {:?}", fjr_question);
 
     Ok(())
 }

@@ -7,14 +7,21 @@ const NUM_CATEGORIES: usize = 6;
 
 /// Parses raw jarchive HTML data into structured objects
 pub fn parse_questions(table: &ElementRef, round: Round) -> Vec<JeopardyQuestion> {
-    let category_selector = Selector::parse("table.round td.category td.category_name").unwrap();
+    let category_selector = Selector::parse("td.category td.category_name").unwrap();
     let question_selector = Selector::parse("td.clue_text").unwrap();
-    let answer_selector = Selector::parse("td.clue div").unwrap();
+    let answer_selector = Selector::parse(if round != Round::FinalJeopardy {
+        "td.clue div"
+    } else {
+        "td.category div"
+    })
+    .unwrap();
 
     let categories: Vec<String> = table
         .select(&category_selector)
         .map(|c| c.inner_html())
         .collect();
+
+    println!("categories = {:?}", categories);
 
     let questions: Vec<String> = table
         .select(&question_selector)
