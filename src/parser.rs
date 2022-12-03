@@ -5,7 +5,8 @@ use crate::models::{JeopardyQuestion, Round};
 
 const NUM_CATEGORIES: usize = 6;
 
-pub fn generate_questions(table: &ElementRef, round: Round) -> Vec<JeopardyQuestion> {
+/// Parses raw jarchive HTML data into structured objects
+pub fn parse_questions(table: &ElementRef, round: Round) -> Vec<JeopardyQuestion> {
     let category_selector = Selector::parse("table.round td.category td.category_name").unwrap();
     let question_selector = Selector::parse("td.clue_text").unwrap();
     let answer_selector = Selector::parse("td.clue div").unwrap();

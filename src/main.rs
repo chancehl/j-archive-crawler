@@ -2,7 +2,7 @@ mod models;
 mod parser;
 
 use models::{JeopardyQuestion, Round};
-use parser::generate_questions;
+use parser::parse_questions;
 use scraper::Selector;
 use std::error::Error;
 
@@ -20,9 +20,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let djr_table = document.select(&djr_selector).next().unwrap();
     // let fjr_question = document.select(&fjr_selector).next().unwrap().inner_html();
 
-    let jr_questions: Vec<JeopardyQuestion> = generate_questions(&jr_table, Round::Jeopardy);
-    let djr_questions: Vec<JeopardyQuestion> =
-        generate_questions(&djr_table, Round::DoubleJeopardy);
+    let jr_questions: Vec<JeopardyQuestion> = parse_questions(&jr_table, Round::Jeopardy);
+    let djr_questions: Vec<JeopardyQuestion> = parse_questions(&djr_table, Round::DoubleJeopardy);
 
     for question in jr_questions {
         println!("{:?}", question);
