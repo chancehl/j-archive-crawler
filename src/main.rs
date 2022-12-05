@@ -1,9 +1,11 @@
 mod models;
 mod parser;
+mod reporter;
 
 use clap::Parser;
 use models::{CliArgs, JeopardyQuestion, Round};
 use parser::parse_questions;
+use reporter::Reporter;
 use scraper::Selector;
 use std::error::Error;
 
@@ -11,13 +13,23 @@ use std::error::Error;
 async fn main() -> Result<(), Box<dyn Error>> {
     let args = CliArgs::parse();
 
-    let mut questions: Vec<JeopardyQuestion> = Vec::new();
+    let mut results: Vec<JeopardyQuestion> = Vec::new();
 
     for _ in 0..args.iterations {
-        questions.extend(scrape(args.episode_no).await.unwrap().iter().cloned());
+        results.extend(scrape(args.episode_no).await.unwrap().iter().cloned());
     }
 
-    println!("questions = {:?}", questions);
+    if let Some(out) = args.outfile {
+        Reporter::new(results)
+            .write(out)
+            .await
+            .expect("Unable to write results to outfile");
+    } else {
+        // if we don't provide an outfile, assume the user wants results printed to the console
+        let json = serde_json::to_string_pretty(&results).unwrap();
+
+        println!("{}", json);
+    }
 
     Ok(())
 }

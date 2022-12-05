@@ -1,13 +1,14 @@
 use clap::Parser;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, PartialEq, Clone, Copy)]
+#[derive(Debug, PartialEq, Clone, Copy, Serialize, Deserialize)]
 pub enum Round {
     Jeopardy,
     DoubleJeopardy,
     FinalJeopardy,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct JeopardyQuestion {
     pub question: String,
     pub category: String,
@@ -28,4 +29,8 @@ pub struct CliArgs {
     /// The number of iterations
     #[arg(short = 'i', long = "iterations", default_value_t = 1)]
     pub iterations: u8,
+
+    /// Where to write the results to
+    #[arg(short = 'o', long = "outfile")]
+    pub outfile: Option<String>,
 }
