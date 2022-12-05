@@ -34,6 +34,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+/// Scrapes j-archive for jeopardy questions
 async fn scrape(episode_no: u32) -> Result<Vec<JeopardyQuestion>, Box<dyn Error>> {
     let url = format!("https://j-archive.com/showgame.php?game_id={0}", episode_no);
 

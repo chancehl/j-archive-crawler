@@ -14,6 +14,7 @@ impl Reporter {
         Self { questions }
     }
 
+    /// Writes json report to disk
     pub async fn write(self, loc: String) -> Result<(), Box<dyn Error>> {
         let json =
             serde_json::to_string_pretty(&self.questions).expect("Could not serialize questions");
