@@ -11,12 +11,19 @@ use std::error::Error;
 async fn main() -> Result<(), Box<dyn Error>> {
     let args = CliArgs::parse();
 
-    println!("args = {:?}", args);
+    let mut questions: Vec<JeopardyQuestion> = Vec::new();
 
-    let url = format!(
-        "https://j-archive.com/showgame.php?game_id={0}",
-        args.episode_no
-    );
+    for _ in 0..args.iterations {
+        questions.extend(scrape(args.episode_no).await.unwrap().iter().cloned());
+    }
+
+    println!("questions = {:?}", questions);
+
+    Ok(())
+}
+
+async fn scrape(episode_no: u32) -> Result<Vec<JeopardyQuestion>, Box<dyn Error>> {
+    let url = format!("https://j-archive.com/showgame.php?game_id={0}", episode_no);
 
     let raw_html = reqwest::get(url).await?.text().await?;
     let document = scraper::Html::parse_document(&raw_html);
@@ -31,17 +38,22 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let jr_questions: Vec<JeopardyQuestion> = parse_questions(&jr_table, Round::Jeopardy);
     let djr_questions: Vec<JeopardyQuestion> = parse_questions(&djr_table, Round::DoubleJeopardy);
-    let fjr_question = parse_questions(&fjr_table, Round::FinalJeopardy);
+    let fjr_questions = parse_questions(&fjr_table, Round::FinalJeopardy);
+
+    let mut questions: Vec<JeopardyQuestion> = Vec::new();
 
     for question in jr_questions {
-        println!("{:?}", question);
+        questions.push(question);
     }
 
     for question in djr_questions {
-        println!("{:?}", question);
+        questions.push(question);
     }
 
-    println!("fjr = {:?}", fjr_question);
+    // note: there should only ever be one
+    for question in fjr_questions {
+        questions.push(question);
+    }
 
-    Ok(())
+    Ok(questions)
 }

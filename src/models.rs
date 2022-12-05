@@ -7,7 +7,7 @@ pub enum Round {
     FinalJeopardy,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct JeopardyQuestion {
     pub question: String,
     pub category: String,
@@ -24,4 +24,8 @@ pub struct CliArgs {
     #[arg(short = 'e', long = "episode", default_value_t = 7515)]
     // pick a more reasonable default, 7515 is 12/01/22 episode
     pub episode_no: u32,
+
+    /// The number of iterations
+    #[arg(short = 'i', long = "iterations", default_value_t = 1)]
+    pub iterations: u8,
 }
