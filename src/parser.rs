@@ -46,15 +46,17 @@ pub fn parse_questions(table: &ElementRef, round: Round) -> Vec<JeopardyQuestion
 
         if round == Round::DoubleJeopardy {
             value = value * 2;
-        } else if round == Round::FinalJeopardy {
-            value = 0;
         }
 
         let jeopardy_question = JeopardyQuestion {
             category: category.to_owned(),
             question: question.to_owned(),
             round,
-            value,
+            value: if round == Round::FinalJeopardy {
+                None
+            } else {
+                Some(value)
+            },
             answer,
         };
 

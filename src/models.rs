@@ -13,7 +13,7 @@ pub struct JeopardyQuestion {
     pub question: String,
     pub category: String,
     pub round: Round,
-    pub value: u32,
+    pub value: Option<u32>,
     pub answer: Option<String>,
 }
 
