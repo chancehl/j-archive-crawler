@@ -12,14 +12,35 @@ use std::error::Error;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     let args = CliArgs::parse();
+    let episode_no = args.episode_no;
+    let iterations = args.iterations;
+    let outfile = args.outfile;
 
     let mut results: Vec<JeopardyQuestion> = Vec::new();
 
-    for _ in 0..args.iterations {
-        results.extend(scrape(args.episode_no).await.unwrap().iter().cloned());
+    for i in episode_no..=(episode_no + u32::from(iterations)) {
+        println!("> Scraping jeopardy questions for episode {0}", i);
+
+        let scraped_results = scrape(episode_no).await?;
+
+        match scraped_results {
+            Some(questions) => {
+                println!(">> Successfully scraped questions episode {0}", i);
+
+                results.extend(questions.iter().cloned());
+            }
+            None => {
+                println!(
+                    ">> Failed to scrape questions for episode {0}. Skipping.",
+                    i
+                );
+
+                continue;
+            }
+        };
     }
 
-    if let Some(out) = args.outfile {
+    if let Some(out) = outfile {
         Reporter::new(results)
             .write(out)
             .await
@@ -31,14 +52,28 @@ async fn main() -> Result<(), Box<dyn Error>> {
         println!("{}", json);
     }
 
+    println!("Run complete!");
+
     Ok(())
 }
 
-/// Scrapes j-archive for jeopardy questions
-async fn scrape(episode_no: u32) -> Result<Vec<JeopardyQuestion>, Box<dyn Error>> {
+/// Gets the raw html for a page
+async fn get_html(episode_no: u32) -> Result<String, Box<dyn Error>> {
     let url = format!("https://j-archive.com/showgame.php?game_id={0}", episode_no);
 
     let raw_html = reqwest::get(url).await?.text().await?;
+
+    Ok(raw_html)
+}
+
+/// Scrapes j-archive for jeopardy questions
+async fn scrape(episode_no: u32) -> Result<Option<Vec<JeopardyQuestion>>, Box<dyn Error>> {
+    let raw_html = get_html(episode_no).await?;
+
+    if raw_html.contains(&format!("ERROR: No game {0} in database.", episode_no)) {
+        return Ok(None);
+    }
+
     let document = scraper::Html::parse_document(&raw_html);
 
     let jr_selector = Selector::parse("#jeopardy_round").unwrap();
@@ -68,5 +103,5 @@ async fn scrape(episode_no: u32) -> Result<Vec<JeopardyQuestion>, Box<dyn Error>
         questions.push(question);
     }
 
-    Ok(questions)
+    Ok(Some(questions))
 }
