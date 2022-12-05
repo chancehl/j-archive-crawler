@@ -35,6 +35,32 @@ cargo run -- --outfile ./results.json
 
 Some initial example data has been written to the `./results/results.json` file that is included in this repository. This data was generated via `$ cargo run -- --outfile ./results/results.json --episode 7050 --iterations 50`.
 
+```
+[
+  {
+    "question": "A \"glow plug\" is used for cold starts in this engine that doesn't use spark plugs",
+    "category": "AUTOMOBILES",
+    "round": "Jeopardy",
+    "value": 200,
+    "answer": "a diesel"
+  },
+  {
+    "question": "Forming most of Vietnam's northwestern border, it's the only landlocked country in Southeast Asia",
+    "category": "RIVERS",
+    "round": "DoubleJeopardy",
+    "value": 2000,
+    "answer": "Laos"
+  },
+  {
+    "question": "Despite govt. predictions to the contrary, in 1985 this became the least populated U.S. state",
+    "category": "U.S. STATES",
+    "round": "FinalJeopardy",
+    "value": null,
+    "answer": "Wyoming"
+  }
+]
+```
+
 # cli --help
 
 ```
