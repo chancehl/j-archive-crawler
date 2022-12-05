@@ -1,14 +1,23 @@
 mod models;
 mod parser;
 
-use models::{JeopardyQuestion, Round};
+use clap::Parser;
+use models::{CliArgs, JeopardyQuestion, Round};
 use parser::parse_questions;
 use scraper::Selector;
 use std::error::Error;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    let url = "https://j-archive.com/showgame.php?game_id=7515";
+    let args = CliArgs::parse();
+
+    println!("args = {:?}", args);
+
+    let url = format!(
+        "https://j-archive.com/showgame.php?game_id={0}",
+        args.episode_no
+    );
+
     let raw_html = reqwest::get(url).await?.text().await?;
     let document = scraper::Html::parse_document(&raw_html);
 
