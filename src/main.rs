@@ -59,9 +59,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
 /// Gets the raw html for a page
 async fn get_html(episode_no: u32) -> Result<String, Box<dyn Error>> {
-    let url = format!("https://j-archive.com/showgame.php?game_id={0}", episode_no);
-
-    let raw_html = reqwest::get(url).await?.text().await?;
+    let raw_html = reqwest::get(format!(
+        "https://j-archive.com/showgame.php?game_id={0}",
+        episode_no
+    ))
+    .await?
+    .text()
+    .await?;
 
     Ok(raw_html)
 }
