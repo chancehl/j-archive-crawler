@@ -21,9 +21,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     for i in episode_no..=(episode_no + u32::from(iterations)) {
         println!("> Scraping jeopardy questions for episode {0}", i);
 
-        let scraped_results = scrape(episode_no).await?;
-
-        match scraped_results {
+        match scrape(i).await? {
             Some(questions) => {
                 println!(">> Successfully scraped questions episode {0}", i);
 
