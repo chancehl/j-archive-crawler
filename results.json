@@ -1,0 +1,856 @@
+[
+  {
+    "prompt": "Tradition says the pilgrims set foot on this historic artifact on December 26, 1620",
+    "category": "HISTORIC DATES",
+    "round": "Jeopardy",
+    "value": 200,
+    "answer": "Plymouth Rock"
+  },
+  {
+    "prompt": "\"Out of the mouth of\" these \"and sucklings hast thou ordained strength\"",
+    "category": "THE KING JAMES BIBLE SAITH",
+    "round": "Jeopardy",
+    "value": 200,
+    "answer": "babes"
+  },
+  {
+    "prompt": "In legend, the Lia Fáil, or \"Stone of Destiny\", atop the Hill of Tara in this nation would roar at the touch of a rightful king",
+    "category": "HEAD FOR THE HILLS",
+    "round": "Jeopardy",
+    "value": 200,
+    "answer": "Ireland"
+  },
+  {
+    "prompt": "It's something that portends a future event, as in the title of a 1976 horror film",
+    "category": "A WORD OF WARNING",
+    "round": "Jeopardy",
+    "value": 200,
+    "answer": "omen (<i>The Omen</i>)"
+  },
+  {
+    "prompt": "\"Billie Jean\" &amp; <br>\"The Girl Is Mine\"",
+    "category": "SONGS FROM THE HIT ALBUM",
+    "round": "Jeopardy",
+    "value": 200,
+    "answer": "<i>Thriller</i>"
+  },
+  {
+    "prompt": "Traditional \"white\" beer is always brewed with this grain in addition to barley",
+    "category": "WE'LL ALL NEED A DRINK AFTER THIS",
+    "round": "Jeopardy",
+    "value": 200,
+    "answer": "wheat"
+  },
+  {
+    "prompt": "San Franciscans heard a noise \"like the roar of 10,000 lions\" on April 18 of this year",
+    "category": "HISTORIC DATES",
+    "round": "Jeopardy",
+    "value": 400,
+    "answer": "1906"
+  },
+  {
+    "prompt": "He \"exceeded all the kings of the earth for riches and for wisdom\"",
+    "category": "THE KING JAMES BIBLE SAITH",
+    "round": "Jeopardy",
+    "value": 400,
+    "answer": "Solomon"
+  },
+  {
+    "prompt": "The 2022 revival of this musical on Broadway stars Hugh Jackman as con artist Harold Hill",
+    "category": "HEAD FOR THE HILLS",
+    "round": "Jeopardy",
+    "value": 400,
+    "answer": "<i>The Music Man</i>"
+  },
+  {
+    "prompt": "On road signs this 5-letter word is inside a white inverted triangle inside a red inverted triangle",
+    "category": "A WORD OF WARNING",
+    "round": "Jeopardy",
+    "value": 400,
+    "answer": "yield"
+  },
+  {
+    "prompt": "\"I Would Die 4 U\" &amp; \"When Doves Cry\"",
+    "category": "SONGS FROM THE HIT ALBUM",
+    "round": "Jeopardy",
+    "value": 400,
+    "answer": "<i>Purple Rain</i>"
+  },
+  {
+    "prompt": "Vodka, rum, tequila, gin &amp; triple sec go in this cocktail, &amp; you must be from a certain part of New York if you think that's a good idea",
+    "category": "WE'LL ALL NEED A DRINK AFTER THIS",
+    "round": "Jeopardy",
+    "value": 400,
+    "answer": "Long Island Iced Tea"
+  },
+  {
+    "prompt": "On Sept. 20, 1932 Gandhi began one of these in a jail cell; his British captors gave in a few days later",
+    "category": "HISTORIC DATES",
+    "round": "Jeopardy",
+    "value": 600,
+    "answer": "a hunger strike"
+  },
+  {
+    "prompt": "From Deuteronomy: \"Of all that are in the waters: all that have fins and\" these \"shall ye eat\"",
+    "category": "THE KING JAMES BIBLE SAITH",
+    "round": "Jeopardy",
+    "value": 600,
+    "answer": "scales"
+  },
+  {
+    "prompt": "History remembers Bunker Hill as the big battle site, but it was actually this hill that saw most of the action on June 17, 1775",
+    "category": "HEAD FOR THE HILLS",
+    "round": "Jeopardy",
+    "value": 600,
+    "answer": "Breed\\'s Hill"
+  },
+  {
+    "prompt": "A yellow card in soccer &amp; a yellow flag in auto racing indicate this warning to be careful",
+    "category": "A WORD OF WARNING",
+    "round": "Jeopardy",
+    "value": 600,
+    "answer": "caution"
+  },
+  {
+    "prompt": "\"Rolling In The Deep\" &amp; \"Set Fire To The Rain\"",
+    "category": "SONGS FROM THE HIT ALBUM",
+    "round": "Jeopardy",
+    "value": 600,
+    "answer": "<i>21</i>"
+  },
+  {
+    "prompt": "February 22 is national this day, but you don't have to wait<span class=\"nobreak\">--</span>salt on the rim?",
+    "category": "WE'LL ALL NEED A DRINK AFTER THIS",
+    "round": "Jeopardy",
+    "value": 600,
+    "answer": "a margarita"
+  },
+  {
+    "prompt": "May 5, 1864 saw the start of this godawful battle near Fredericksburg fought partly in a burning forest",
+    "category": "HISTORIC DATES",
+    "round": "Jeopardy",
+    "value": 800,
+    "answer": "the Wilderness"
+  },
+  {
+    "prompt": "\"Jesus saith unto him, I am the way,\" the this \"and the life\"",
+    "category": "THE KING JAMES BIBLE SAITH",
+    "round": "Jeopardy",
+    "value": 800,
+    "answer": "the truth"
+  },
+  {
+    "prompt": "\"The Beggar's Opera\" of 1728 contains the ballad that rhymes, \"If with me you'd fondly stray over the hills &amp;...\" here",
+    "category": "HEAD FOR THE HILLS",
+    "round": "Jeopardy",
+    "value": 800,
+    "answer": "far away"
+  },
+  {
+    "prompt": "In a famous poem, Paul Revere was \"ready to ride and spread\" this \"through every Middlesex village and farm\"",
+    "category": "A WORD OF WARNING",
+    "round": "Jeopardy",
+    "value": 800,
+    "answer": "the alarm"
+  },
+  {
+    "prompt": "\"2 Become 1\" &amp; \"Wannabe\" (part of the group name)",
+    "category": "SONGS FROM THE HIT ALBUM",
+    "round": "Jeopardy",
+    "value": 800,
+    "answer": "<i>Spice</i>"
+  },
+  {
+    "prompt": "The name of this Spanish version of champagne literally means a wine cellar",
+    "category": "WE'LL ALL NEED A DRINK AFTER THIS",
+    "round": "Jeopardy",
+    "value": 800,
+    "answer": "cava"
+  },
+  {
+    "prompt": "In a historic first, this 75-year-old was sworn in as president of his country May 10, 1994",
+    "category": "HISTORIC DATES",
+    "round": "Jeopardy",
+    "value": 1000,
+    "answer": "Mandela"
+  },
+  {
+    "prompt": "From 2 Corinthians: \"For we walk by\" this, \"not by sight\"",
+    "category": "THE KING JAMES BIBLE SAITH",
+    "round": "Jeopardy",
+    "value": 1000,
+    "answer": "faith"
+  },
+  {
+    "prompt": "Of the 7 hills of Rome, it's the most central &amp; once the site of lavish dwellings built by emperors",
+    "category": "HEAD FOR THE HILLS",
+    "round": "Jeopardy",
+    "value": 1000,
+    "answer": "Palatine"
+  },
+  {
+    "prompt": "This 6-syllable word is a reason for a drug or treatment not to be used, like aspirin for patients with bleeding disorders",
+    "category": "A WORD OF WARNING",
+    "round": "Jeopardy",
+    "value": 1000,
+    "answer": "a contraindication"
+  },
+  {
+    "prompt": "\"Rehab\" &amp; <br>\"You Know I'm No Good\"",
+    "category": "SONGS FROM THE HIT ALBUM",
+    "round": "Jeopardy",
+    "value": 1000,
+    "answer": "<i>Back to Black</i>"
+  },
+  {
+    "prompt": "An Italian count is likely the namesake of this gin, vermouth &amp; Campari cocktail",
+    "category": "WE'LL ALL NEED A DRINK AFTER THIS",
+    "round": "Jeopardy",
+    "value": 1000,
+    "answer": "Negroni"
+  },
+  {
+    "prompt": "This island seen <a href=\"https://www.j-archive.com/media/2022-11-17_DJ_30.jpg\" target=\"_blank\">here</a> is about 30 miles south of Cape Cod",
+    "category": "NATIVE AMERICAN PLACE NAMES IN THE U.S.",
+    "round": "DoubleJeopardy",
+    "value": 400,
+    "answer": "Nantucket"
+  },
+  {
+    "prompt": "He wrote about his older brothers, his illness &amp; Chappaquiddick in his 2009 memoir \"True Compass\"",
+    "category": "MEMOIRS &amp; PERSONAL ACCOUNTS",
+    "round": "DoubleJeopardy",
+    "value": 400,
+    "answer": "Edward Kennedy"
+  },
+  {
+    "prompt": "Catalogued by Ptolemy, the constellation Equuleus is next to this winged brother",
+    "category": "FAR OUT",
+    "round": "DoubleJeopardy",
+    "value": 400,
+    "answer": "Pegasus"
+  },
+  {
+    "prompt": "Once upon a time (actually, 1956), this Oscar winner became a real-life princess (of Monaco)",
+    "category": "MISCELLANY",
+    "round": "DoubleJeopardy",
+    "value": 400,
+    "answer": "Grace Kelly"
+  },
+  {
+    "prompt": "It's the fleshy lobe on a turkey's neck",
+    "category": "DOUBLE LETTERS IN THE MIDDLE",
+    "round": "DoubleJeopardy",
+    "value": 400,
+    "answer": "wattle"
+  },
+  {
+    "prompt": "(<a target=\"_blank\" href=\"https://www.j-archive.com/media/2022-11-17_DJ_25.jpg\">Jacqueline Stewart of Turner Classic Movies presents the clue.</a>) Seen without makeup &amp; mostly in closeups, French actress <a target=\"_blank\" href=\"https://www.j-archive.com/media/2022-11-17_DJ_25a.jpg\">Maria Falconetti's</a> performance in \"The Passion of\" this peasant girl turned martyr is considered one of the greatest of all time",
+    "category": "<a href=\"https://www.j-archive.com/media/2022-11-17_DJ_Cat6.jpg\" target=\"_blank\">SILENT FILMS WITH JACQUELINE STEWART</a>",
+    "round": "DoubleJeopardy",
+    "value": 400,
+    "answer": "Joan of Arc"
+  },
+  {
+    "prompt": "It's the capital of a state &amp; the seat of Laramie County",
+    "category": "NATIVE AMERICAN PLACE NAMES IN THE U.S.",
+    "round": "DoubleJeopardy",
+    "value": 800,
+    "answer": "Cheyenne"
+  },
+  {
+    "prompt": "In \"Persepolis\", a graphic memoir, Marjane Satrapi wrote about growing up in this country during the Islamic Revolution",
+    "category": "MEMOIRS &amp; PERSONAL ACCOUNTS",
+    "round": "DoubleJeopardy",
+    "value": 800,
+    "answer": "Iran"
+  },
+  {
+    "prompt": "New stars \"grow up\" in what are called \"stellar\" these, like the place for kids or plants",
+    "category": "FAR OUT",
+    "round": "DoubleJeopardy",
+    "value": 800,
+    "answer": "nurseries"
+  },
+  {
+    "prompt": "Cuban-born Delia Fiallo was known as \"The Mother of\" these Latin American soap operas, having written more than 40 of them",
+    "category": "MISCELLANY",
+    "round": "DoubleJeopardy",
+    "value": 800,
+    "answer": "telenovelas"
+  },
+  {
+    "prompt": "Let's horse around with this sport of very controlled equine movements",
+    "category": "DOUBLE LETTERS IN THE MIDDLE",
+    "round": "DoubleJeopardy",
+    "value": 800,
+    "answer": "dressage"
+  },
+  {
+    "prompt": "(<a target=\"_blank\" href=\"https://www.j-archive.com/media/2022-11-17_DJ_06.jpg\">Jacqueline Stewart of Turner Classic Movies presents the clue.</a>) Shot in Rome &amp; Los Angeles at a cost of nearly $4 million, the 1925 version of this biblical epic with a great <a href=\"https://www.j-archive.com/media/2022-11-17_DJ_06a.jpg\" target=\"_blank\">sea battle</a> &amp; <a target=\"_blank\" href=\"https://www.j-archive.com/media/2022-11-17_DJ_06b.jpg\">chariot race</a> was the most expensive silent movie ever made",
+    "category": "<a href=\"https://www.j-archive.com/media/2022-11-17_DJ_Cat6.jpg\" target=\"_blank\">SILENT FILMS WITH JACQUELINE STEWART</a>",
+    "round": "DoubleJeopardy",
+    "value": 800,
+    "answer": "<i>Ben-Hur</i>"
+  },
+  {
+    "prompt": "This city, B'gosh, is located where the Upper Fox River enters Lake Winnebago",
+    "category": "NATIVE AMERICAN PLACE NAMES IN THE U.S.",
+    "round": "DoubleJeopardy",
+    "value": 1200,
+    "answer": "Oshkosh"
+  },
+  {
+    "prompt": "Paralyzed &amp; speech-less from a stroke, Jean-Dominique Bauby used his left eyelid to dictate \"The Diving Bell and the\" this",
+    "category": "MEMOIRS &amp; PERSONAL ACCOUNTS",
+    "round": "DoubleJeopardy",
+    "value": 1200,
+    "answer": "butterfly"
+  },
+  {
+    "prompt": "The <a href=\"https://www.j-archive.com/media/2022-11-17_DJ_15.jpg\" target=\"_blank\">red dot</a> represents the Milky Way on a cosmic map that depicts <a target=\"_blank\" href=\"https://www.j-archive.com/media/2022-11-17_DJ_15a.jpg\">Laniakea</a>, a group of galaxies known as a super this",
+    "category": "FAR OUT",
+    "round": "DoubleJeopardy",
+    "value": 1200,
+    "answer": "cluster"
+  },
+  {
+    "prompt": "The leaves of <a href=\"https://www.j-archive.com/media/2022-11-17_DJ_22.jpg\" target=\"_blank\">this</a> plant native to South America are the source of the same-named sugar substitute",
+    "category": "MISCELLANY",
+    "round": "DoubleJeopardy",
+    "value": 1200,
+    "answer": "stevia"
+  },
+  {
+    "prompt": "A low seat for an easily freaked-out Mother Goose girl",
+    "category": "DOUBLE LETTERS IN THE MIDDLE",
+    "round": "DoubleJeopardy",
+    "value": 1200,
+    "answer": "tuffet"
+  },
+  {
+    "prompt": "(<a target=\"_blank\" href=\"https://www.j-archive.com/media/2022-11-17_DJ_21.jpg\">Jacqueline Stewart of Turner Classic Movies presents the clue.</a>) Lon Chaney's face was so <a href=\"https://www.j-archive.com/media/2022-11-17_DJ_21a.jpg\" target=\"_blank\">frightening</a> in this Paris-set film that some moviegoers reportedly fainted when his mask was removed",
+    "category": "<a href=\"https://www.j-archive.com/media/2022-11-17_DJ_Cat6.jpg\" target=\"_blank\">SILENT FILMS WITH JACQUELINE STEWART</a>",
+    "round": "DoubleJeopardy",
+    "value": 1200,
+    "answer": "<i>The Phantom of the Opera</i>"
+  },
+  {
+    "prompt": "For a romantic getaway, some couples head to Hawley or Lakeville in these mountains within northeastern Pennsylvania",
+    "category": "NATIVE AMERICAN PLACE NAMES IN THE U.S.",
+    "round": "DoubleJeopardy",
+    "value": 1600,
+    "answer": "the Poconos"
+  },
+  {
+    "prompt": "One of Time magazine's Most Influential People of 2019, she wrote the memoir \"Educated\"",
+    "category": "MEMOIRS &amp; PERSONAL ACCOUNTS",
+    "round": "DoubleJeopardy",
+    "value": 1600,
+    "answer": "Westover"
+  },
+  {
+    "prompt": "Once matter enters a black hole, it falls to the center &amp; concentrates at an infinitely dense point called this",
+    "category": "FAR OUT",
+    "round": "DoubleJeopardy",
+    "value": 1600,
+    "answer": "the singularity"
+  },
+  {
+    "prompt": "A speedometer shows how fast your car is going while this displays the engine's speed in revolutions per minute",
+    "category": "MISCELLANY",
+    "round": "DoubleJeopardy",
+    "value": 1600,
+    "answer": "tachometer"
+  },
+  {
+    "prompt": "French title for the leader of a monastery",
+    "category": "DOUBLE LETTERS IN THE MIDDLE",
+    "round": "DoubleJeopardy",
+    "value": 1600,
+    "answer": "an <i>abbé</i>"
+  },
+  {
+    "prompt": "(<a target=\"_blank\" href=\"https://www.j-archive.com/media/2022-11-17_DJ_23.jpg\">Jacqueline Stewart of Turner Classic Movies presents the clue.</a>) Pioneering Black filmmaker <a href=\"https://www.j-archive.com/media/2022-11-17_DJ_23a.jpg\" target=\"_blank\">Oscar Micheaux</a> dealt with racism in films like \"Within Our Gates\"; &amp; in 1925's \"Body and Soul\", he introduced <a href=\"https://www.j-archive.com/media/2022-11-17_DJ_23b.jpg\" target=\"_blank\">this</a> actor &amp; bass baritone later famous for his rendition of \"Ol' Man River\"",
+    "category": "<a href=\"https://www.j-archive.com/media/2022-11-17_DJ_Cat6.jpg\" target=\"_blank\">SILENT FILMS WITH JACQUELINE STEWART</a>",
+    "round": "DoubleJeopardy",
+    "value": 1600,
+    "answer": "(Paul) Robeson"
+  },
+  {
+    "prompt": "Located near the Oregon border, this Washington city with a double-talk name is famous for its wines &amp; vineyards",
+    "category": "NATIVE AMERICAN PLACE NAMES IN THE U.S.",
+    "round": "DoubleJeopardy",
+    "value": 2000,
+    "answer": "Walla Walla"
+  },
+  {
+    "prompt": "Susannah Cahalan chronicled her descent into madness while struggling with an autoimmune disease in this 2012 bestseller",
+    "category": "MEMOIRS &amp; PERSONAL ACCOUNTS",
+    "round": "DoubleJeopardy",
+    "value": 2000,
+    "answer": "<i>Brain on Fire</i>"
+  },
+  {
+    "prompt": "The Wilkinson Probe monitored fluctuations in the residue of the Big Bang known as the CMB, short for this",
+    "category": "FAR OUT",
+    "round": "DoubleJeopardy",
+    "value": 2000,
+    "answer": "cosmic microwave background"
+  },
+  {
+    "prompt": "Though some are kept as exotic pets, this wildcat seen <a href=\"https://www.j-archive.com/media/2022-11-17_DJ_12.jpg\" target=\"_blank\">here</a> is better left in the wild",
+    "category": "MISCELLANY",
+    "round": "DoubleJeopardy",
+    "value": 2000,
+    "answer": "a serval"
+  },
+  {
+    "prompt": "It's a 2-seated pleasure carriage, perhaps \"with the fringe on top\"",
+    "category": "DOUBLE LETTERS IN THE MIDDLE",
+    "round": "DoubleJeopardy",
+    "value": 2000,
+    "answer": "a surrey"
+  },
+  {
+    "prompt": "(<a href=\"https://www.j-archive.com/media/2022-11-17_DJ_24.jpg\" target=\"_blank\">Jacqueline Stewart of Turner Classic Movies presents the clue.</a>) <a target=\"_blank\" href=\"https://www.j-archive.com/media/2022-11-17_DJ_24a.jpg\">Her</a> slate of films for 1927 included \"Wings\", the first film to win Best Picture &amp; \"It\", giving her the nickname \"The It Girl\"",
+    "category": "<a href=\"https://www.j-archive.com/media/2022-11-17_DJ_Cat6.jpg\" target=\"_blank\">SILENT FILMS WITH JACQUELINE STEWART</a>",
+    "round": "DoubleJeopardy",
+    "value": 2000,
+    "answer": "Clara Bow"
+  },
+  {
+    "prompt": "Ridley Scott's first feature film, \"The Duellists\", was based on a story by this author to whom Scott's film \"Alien\" also pays tribute",
+    "category": "MOVIES &amp; LITERATURE",
+    "round": "FinalJeopardy",
+    "value": null,
+    "answer": "Joseph Conrad"
+  },
+  {
+    "prompt": "This New Mexico City claims the title “Hot Air Balloon Capital of the World”",
+    "category": "U.S. CITIES",
+    "round": "Jeopardy",
+    "value": 200,
+    "answer": "Albuquerque"
+  },
+  {
+    "prompt": "Turn in just about any direction in the type of office chair known as this spinning motion \"&amp; tilt\"",
+    "category": "FURNITURE",
+    "round": "Jeopardy",
+    "value": 200,
+    "answer": "swivel"
+  },
+  {
+    "prompt": "Money existing only digitally; in 2022 $275 billion was lost in its global market in a single day",
+    "category": "5-SYLLABLE WORDS",
+    "round": "Jeopardy",
+    "value": 200,
+    "answer": "cryptocurrency"
+  },
+  {
+    "prompt": "\"The Last of the Starks\"",
+    "category": "TV DRAMAS BY EPISODE TITLES",
+    "round": "Jeopardy",
+    "value": 200,
+    "answer": "<i>Game of Thrones</i>"
+  },
+  {
+    "prompt": "Lacking admirable qualities, Alex in \"A Clockwork Orange\" is considered this type of protagonist",
+    "category": "THE \"ANTI\" CATEGORY",
+    "round": "Jeopardy",
+    "value": 200,
+    "answer": "an antihero"
+  },
+  {
+    "prompt": "Neanderthals emerged about 400,000 years ago in the Pleistocene, an epoch marked by these intermittent glacial episodes",
+    "category": "THE NEANDERTHALS",
+    "round": "Jeopardy",
+    "value": 200,
+    "answer": "ice ages"
+  },
+  {
+    "prompt": "A suburb of Dallas, this city officially recognizes Rip Van Winkle's creator as its namesake",
+    "category": "U.S. CITIES",
+    "round": "Jeopardy",
+    "value": 400,
+    "answer": "Irving"
+  },
+  {
+    "prompt": "The tambour is what gives this piece of furniture seen <a href=\"https://www.j-archive.com/media/2022-11-18_J_03.jpg\" target=\"_blank\">here</a> its name",
+    "category": "FURNITURE",
+    "round": "Jeopardy",
+    "value": 400,
+    "answer": "a roll-top desk"
+  },
+  {
+    "prompt": "Indigenous Australians can also be acceptably referred to by this adjective",
+    "category": "5-SYLLABLE WORDS",
+    "round": "Jeopardy",
+    "value": 400,
+    "answer": "Aboriginal"
+  },
+  {
+    "prompt": "\"Victory of the Daleks\"",
+    "category": "TV DRAMAS BY EPISODE TITLES",
+    "round": "Jeopardy",
+    "value": 400,
+    "answer": "<i>Doctor Who</i>"
+  },
+  {
+    "prompt": "It's what the A-D stands for in WADA, a world organization dedicated to fair competition &amp; clean sport",
+    "category": "THE \"ANTI\" CATEGORY",
+    "round": "Jeopardy",
+    "value": 400,
+    "answer": "Anti-Doping"
+  },
+  {
+    "prompt": "A valley in this country where some of the first bones were found gave the Neanderthals their name",
+    "category": "THE NEANDERTHALS",
+    "round": "Jeopardy",
+    "value": 400,
+    "answer": "Germany"
+  },
+  {
+    "prompt": "Located in the heart of the Lehigh Valley, it's nicknamed the \"Christmas City\"",
+    "category": "U.S. CITIES",
+    "round": "Jeopardy",
+    "value": 600,
+    "answer": "Bethlehem"
+  },
+  {
+    "prompt": "The name of this piece of furniture comes from the French for \"to put to bed\"",
+    "category": "FURNITURE",
+    "round": "Jeopardy",
+    "value": 600,
+    "answer": "a couch"
+  },
+  {
+    "prompt": "This word describes each correct response in the category",
+    "category": "5-SYLLABLE WORDS",
+    "round": "Jeopardy",
+    "value": 600,
+    "answer": "pentasyllabic"
+  },
+  {
+    "prompt": "\"Infected\" &amp; <br>\"Here's Negan\"",
+    "category": "TV DRAMAS BY EPISODE TITLES",
+    "round": "Jeopardy",
+    "value": 600,
+    "answer": "<i>The Walking Dead</i>"
+  },
+  {
+    "prompt": "Patrick Henry was a leader of this group that took issue with the Constitution &amp; an all-too-powerful national government",
+    "category": "THE \"ANTI\" CATEGORY",
+    "round": "Jeopardy",
+    "value": 600,
+    "answer": "the Anti-Federalists"
+  },
+  {
+    "prompt": "Wear from pyrite on tools indicates Neanderthals may have been able to produce this, not just collect it from natural sources",
+    "category": "THE NEANDERTHALS",
+    "round": "Jeopardy",
+    "value": 600,
+    "answer": "fire"
+  },
+  {
+    "prompt": "Once a large Quaker community, this California city bears the last name of Quaker poet John Greenleaf",
+    "category": "U.S. CITIES",
+    "round": "Jeopardy",
+    "value": 800,
+    "answer": "Whittier"
+  },
+  {
+    "prompt": "Often wrought iron, a shelving unit that's handy in the kitchen is called this kitchen personage's rack",
+    "category": "FURNITURE",
+    "round": "Jeopardy",
+    "value": 800,
+    "answer": "the baker\\'s rack"
+  },
+  {
+    "prompt": "This adjective is used to indicate a novel has been written in the form of letters",
+    "category": "5-SYLLABLE WORDS",
+    "round": "Jeopardy",
+    "value": 800,
+    "answer": "epistolary"
+  },
+  {
+    "prompt": "\"The Midterms\" &amp; <br>\"The White House Pro-Am\"",
+    "category": "TV DRAMAS BY EPISODE TITLES",
+    "round": "Jeopardy",
+    "value": 800,
+    "answer": "<i>The West Wing</i>"
+  },
+  {
+    "prompt": "We won't ask you to spell this 28-letter word ending in M that the OED says is \"popularly cited as an example of a long word\"",
+    "category": "THE \"ANTI\" CATEGORY",
+    "round": "Jeopardy",
+    "value": 800,
+    "answer": "antidisestablishmentarianism"
+  },
+  {
+    "prompt": "Despite beliefs to the contrary, the discovery &amp; analysis of a Neanderthal hyoid bone suggests that they may have had this ability",
+    "category": "THE NEANDERTHALS",
+    "round": "Jeopardy",
+    "value": 800,
+    "answer": "speech"
+  },
+  {
+    "prompt": "<a href=\"https://www.j-archive.com/media/2022-11-18_J_02.mp4\">River surfing</a> is a big deal in this second-largest Montana city that's also home to the University of Montana",
+    "category": "U.S. CITIES",
+    "round": "Jeopardy",
+    "value": 1000,
+    "answer": "Missoula"
+  },
+  {
+    "prompt": "<a href=\"https://www.j-archive.com/media/2022-11-18_J_06.jpg\" target=\"_blank\">Here's</a> a chair designed by this pioneer of the mission furniture style",
+    "category": "FURNITURE",
+    "round": "Jeopardy",
+    "value": 1000,
+    "answer": "(Gustav) Stickley"
+  },
+  {
+    "prompt": "Relating to that city in southern Italy famous for pizza",
+    "category": "5-SYLLABLE WORDS",
+    "round": "Jeopardy",
+    "value": 1000,
+    "answer": "Neapolitan"
+  },
+  {
+    "prompt": "\"Sophomoric\", <br>\"Senioritis\" &amp; <br>\"Ben Don't Leave\"",
+    "category": "TV DRAMAS BY EPISODE TITLES",
+    "round": "Jeopardy",
+    "value": 1000,
+    "answer": "<i>Felicity</i>"
+  },
+  {
+    "prompt": "Founded in 1913, it has the dual mission of \"securing justice not only for Jews but for all people\"",
+    "category": "THE \"ANTI\" CATEGORY",
+    "round": "Jeopardy",
+    "value": 1000,
+    "answer": "the Anti-Defamation League"
+  },
+  {
+    "prompt": "Some Neanderthals hunted megafauna like the mammoth, the wooly rhino &amp; this wild ox, the ancestor of domestic cattle",
+    "category": "THE NEANDERTHALS",
+    "round": "Jeopardy",
+    "value": 1000,
+    "answer": "the aurochs"
+  },
+  {
+    "prompt": "When visiting Segovia, northwest of Madrid, don't miss the <a href=\"https://www.j-archive.com/media/2022-11-18_DJ_26.jpg\" target=\"_blank\">Alcazar</a> where she became queen in 1474",
+    "category": "HISTORIC CASTLES",
+    "round": "DoubleJeopardy",
+    "value": 400,
+    "answer": "Isabella"
+  },
+  {
+    "prompt": "A 1988 ad in a Seattle mag said, \"Drummer wanted... Soundgarden, Zep, Scratch Acid\" &amp; was signed \"Kurdt\"<span class=\"nobreak\">--</span>him",
+    "category": "BAND AD",
+    "round": "DoubleJeopardy",
+    "value": 400,
+    "answer": "Cobain"
+  },
+  {
+    "prompt": "It's a 3-part painting, like Francis Bacon's \"3 Studies of Lucian Freud\"",
+    "category": "PAINT SAMPLES",
+    "round": "DoubleJeopardy",
+    "value": 400,
+    "answer": "a triptych"
+  },
+  {
+    "prompt": "Dorothy Andersen was the first to identify this disease, CF for short, &amp; helped create the first tests to diagnose it",
+    "category": "AMERICAN WOMEN",
+    "round": "DoubleJeopardy",
+    "value": 400,
+    "answer": "cystic fibrosis"
+  },
+  {
+    "prompt": "Ayn Rand is thought to have based the architect in this novel on Frank Lloyd Wright",
+    "category": "20th CENTURY FICTION",
+    "round": "DoubleJeopardy",
+    "value": 400,
+    "answer": "<i>The Fountainhead</i>"
+  },
+  {
+    "prompt": "Dyed object hunted for on resurrection Sunday, with fried Chinese appetizers becoming an Alabama football rally cry",
+    "category": "BEFORE, DURING &amp; AFTER",
+    "round": "DoubleJeopardy",
+    "value": 400,
+    "answer": "Easter egg roll Tide"
+  },
+  {
+    "prompt": "Caernarfon Castle was the site for the investiture of him as Prince of Wales in 1969",
+    "category": "HISTORIC CASTLES",
+    "round": "DoubleJeopardy",
+    "value": 800,
+    "answer": "(Prince) Charles (Charles III)"
+  },
+  {
+    "prompt": "\"Musicians-singers for acting roles in new TV series... 4 insane boys, age 17-21\", said the 1965 ad that launched this group",
+    "category": "BAND AD",
+    "round": "DoubleJeopardy",
+    "value": 800,
+    "answer": "The Monkees"
+  },
+  {
+    "prompt": "Benjamin West nailed history painting depicting this man's \"Treaty with the Indians\" on the Delaware River",
+    "category": "PAINT SAMPLES",
+    "round": "DoubleJeopardy",
+    "value": 800,
+    "answer": "William Penn"
+  },
+  {
+    "prompt": "In the 1950s, <a target=\"_blank\" href=\"https://www.j-archive.com/media/2022-11-18_DJ_02.jpg\">she</a> broke the color barrier in tennis &amp; became the first Black American to win a Grand Slam tournament",
+    "category": "AMERICAN WOMEN",
+    "round": "DoubleJeopardy",
+    "value": 800,
+    "answer": "(Althea) Gibson"
+  },
+  {
+    "prompt": "\"The Curious Case of\" this title Fitzgerald short story character is that he ages backwards",
+    "category": "20th CENTURY FICTION",
+    "round": "DoubleJeopardy",
+    "value": 800,
+    "answer": "Benjamin Button"
+  },
+  {
+    "prompt": "Ping-Pong a.k.a. that gives you an arm joint ache treatable with a curved pasta",
+    "category": "BEFORE, DURING &amp; AFTER",
+    "round": "DoubleJeopardy",
+    "value": 800,
+    "answer": "table tennis elbow macaroni"
+  },
+  {
+    "prompt": "Poland's Malbork Castle is the largest in Europe built with these rather than stones",
+    "category": "HISTORIC CASTLES",
+    "round": "DoubleJeopardy",
+    "value": 1200,
+    "answer": "brick"
+  },
+  {
+    "prompt": "An ad mentioning love for the band Oasis led Brandon Flowers to what became this group",
+    "category": "BAND AD",
+    "round": "DoubleJeopardy",
+    "value": 1200,
+    "answer": "The Killers"
+  },
+  {
+    "prompt": "Don't try to pet this cat in a tricky canvas by Louis-Leopold Boilly, who invented this French term",
+    "category": "PAINT SAMPLES",
+    "round": "DoubleJeopardy",
+    "value": 1200,
+    "answer": "trompe-l\\'œil"
+  },
+  {
+    "prompt": "For a 1915 exhibition to help raise money for women's suffrage, this Impressionist sent a number of her works from France",
+    "category": "AMERICAN WOMEN",
+    "round": "DoubleJeopardy",
+    "value": 1200,
+    "answer": "Cassatt"
+  },
+  {
+    "prompt": "This 1932 Pulitzer Prize winner begins, \"It was Wang Lung's marriage day\"",
+    "category": "20th CENTURY FICTION",
+    "round": "DoubleJeopardy",
+    "value": 1200,
+    "answer": "<i>The Good Earth</i>"
+  },
+  {
+    "prompt": "Telepathic Patrick Stewart character shows you the exact place he hid the treasure, a bit of Earl Grey",
+    "category": "BEFORE, DURING &amp; AFTER",
+    "round": "DoubleJeopardy",
+    "value": 1200,
+    "answer": "Professor X marks the spot of tea"
+  },
+  {
+    "prompt": "Home to the Vatican Observatory, this castle complex was first used as a summer papal residence in the 17th century",
+    "category": "HISTORIC CASTLES",
+    "round": "DoubleJeopardy",
+    "value": 1600,
+    "answer": "Castel Gandolfo"
+  },
+  {
+    "prompt": "Metallica got its start when he placed an ad saying, \"Drummer looking for other metal musicians to jam with\"",
+    "category": "BAND AD",
+    "round": "DoubleJeopardy",
+    "value": 1600,
+    "answer": "(Lars) Ulrich"
+  },
+  {
+    "prompt": "Vermeer went outside for his cityscape \"View of\" this 5-letter city",
+    "category": "PAINT SAMPLES",
+    "round": "DoubleJeopardy",
+    "value": 1600,
+    "answer": "Delft"
+  },
+  {
+    "prompt": "<a href=\"https://www.j-archive.com/media/2022-11-18_DJ_05.jpg\" target=\"_blank\">She</a> served in the Senate from 2003 to 2009; her late husband served from 1969 to 1996",
+    "category": "AMERICAN WOMEN",
+    "round": "DoubleJeopardy",
+    "value": 1600,
+    "answer": "Elizabeth Dole"
+  },
+  {
+    "prompt": "This book with a facial feature in its title was  Toni Morrison's debut novel",
+    "category": "20th CENTURY FICTION",
+    "round": "DoubleJeopardy",
+    "value": 1600,
+    "answer": "<i>The Bluest Eye</i>"
+  },
+  {
+    "prompt": "Tart \"tot\" candy for a sketch comedy group in charge of making sure those in school don't run in the corridors",
+    "category": "BEFORE, DURING &amp; AFTER",
+    "round": "DoubleJeopardy",
+    "value": 1600,
+    "answer": "Sour Patch Kids in the Hall monitor"
+  },
+  {
+    "prompt": "Built by the Knights of Saint John in the 1100 &amp; 1200s, the crusader castle <a target=\"_blank\" href=\"https://www.j-archive.com/media/2022-11-18_DJ_22.jpg\">Krak des Chevaliers</a> is in this Middle Eastern country",
+    "category": "HISTORIC CASTLES",
+    "round": "DoubleJeopardy",
+    "value": 2000,
+    "answer": "Syria"
+  },
+  {
+    "prompt": "An ad mentioning folkie trio Peter, Paul &amp; Mary &amp; punkie trio Hüsker Dü brought Kim Deal into this group",
+    "category": "BAND AD",
+    "round": "DoubleJeopardy",
+    "value": 2000,
+    "answer": "the Pixies"
+  },
+  {
+    "prompt": "In 2010 you could get a Rothko for 44 cents: \"Orange and Yellow\", in a stamp series honoring this 2-word movement in American painting",
+    "category": "PAINT SAMPLES",
+    "round": "DoubleJeopardy",
+    "value": 2000,
+    "answer": "abstract expressionism"
+  },
+  {
+    "prompt": "Many of her photos were published in the 1939 book \"An American Exodus: A Record of Human Erosion\"",
+    "category": "AMERICAN WOMEN",
+    "round": "DoubleJeopardy",
+    "value": 2000,
+    "answer": "(Dorothea) Lange"
+  },
+  {
+    "prompt": "His 1912 novel \"Riders of the Purple Sage\" is considered one of the best Westerns",
+    "category": "20th CENTURY FICTION",
+    "round": "DoubleJeopardy",
+    "value": 2000,
+    "answer": "(Zane) Grey"
+  },
+  {
+    "prompt": "Cincinnati Red with 4,256 hits who sits in the White House flower beds, admiring a Hieronymus Bosch painting",
+    "category": "BEFORE, DURING &amp; AFTER",
+    "round": "DoubleJeopardy",
+    "value": 2000,
+    "answer": "Pete Rose Garden of Earthly Delights"
+  },
+  {
+    "prompt": "William the Conqueror's son built a fortress on a key northern river in 1080, giving this city its name",
+    "category": "ENGLISH CITIES",
+    "round": "FinalJeopardy",
+    "value": null,
+    "answer": "Newcastle (upon Tyne)"
+  }
+]

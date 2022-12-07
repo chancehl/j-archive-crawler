@@ -1,10 +1,12 @@
+mod errors;
 mod models;
 mod parser;
 mod reporter;
 mod scraper;
 
-use crate::scraper::{JArchiveScraper, ScrapingError};
+use crate::scraper::JArchiveScraper;
 use clap::Parser;
+use errors::ScrapingError;
 use models::CliArgs;
 use reporter::Reporter;
 

@@ -1,33 +1,13 @@
+use crate::errors::ScrapingError;
 use crate::models::JeopardyQuestion;
 use crate::parser::JArchiveDocumentParser;
 use std::error::Error;
-use std::fmt;
 
 #[derive(Default)]
 pub struct JArchiveScraper;
 
-#[derive(Debug, Clone)]
-pub struct ScrapingError {
-    pub episode_no: u32,
-}
-
-impl fmt::Display for ScrapingError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "{}",
-            format!("Could not scape data for episode {0}", self.episode_no)
-        )
-    }
-}
-
-impl ScrapingError {
-    pub fn new(episode_no: u32) -> ScrapingError {
-        ScrapingError { episode_no }
-    }
-}
-
 impl JArchiveScraper {
+    /// Creates a new instance of the scraper
     pub fn new() -> Self {
         Default::default()
     }
@@ -65,13 +45,9 @@ impl JArchiveScraper {
 
     /// Gets the raw html for a page
     pub async fn get_html(episode_no: u32) -> Result<String, Box<dyn Error>> {
-        let raw_html = reqwest::get(format!(
-            "https://j-archive.com/showgame.php?game_id={0}",
-            episode_no
-        ))
-        .await?
-        .text()
-        .await?;
+        let url = format!("https://j-archive.com/showgame.php?game_id={0}", episode_no);
+
+        let raw_html = reqwest::get(url).await?.text().await?;
 
         Ok(raw_html)
     }
