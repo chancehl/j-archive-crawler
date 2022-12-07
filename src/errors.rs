@@ -2,22 +2,18 @@ use std::fmt;
 
 #[derive(Debug, Clone)]
 pub struct ScrapingError {
-    pub episode_no: u32,
+    msg: String,
 }
 
 impl fmt::Display for ScrapingError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "{}",
-            format!("Could not scape data for episode {0}", self.episode_no)
-        )
+        write!(f, "{}", self.msg)
     }
 }
 
 impl ScrapingError {
-    pub fn new(episode_no: u32) -> ScrapingError {
-        ScrapingError { episode_no }
+    pub fn new(msg: impl Into<String>) -> ScrapingError {
+        ScrapingError { msg: msg.into() }
     }
 }
 

@@ -16,20 +16,26 @@ async fn main() -> Result<(), ScrapingError> {
 
     let results = JArchiveScraper::new()
         .scrape(args.episode_no, args.iterations.into())
-        .await
-        .unwrap();
+        .await;
 
-    if let Some(out) = args.outfile {
-        Reporter::new(&results)
-            .write(out)
-            .await
-            .expect("Unable to write results to outfile");
-    } else {
-        // if we don't provide an outfile, assume the user wants results logged to the console
-        Reporter::new(&results).echo();
-    }
+    match results {
+        Ok(questions) => {
+            let reporter = Reporter::new(&questions);
 
-    println!("Run complete!");
+            if let Some(out) = args.outfile {
+                reporter
+                    .write(out)
+                    .await
+                    .expect("Unable to write results to outfile");
+            } else {
+                // if we don't provide an outfile, assume the user wants results logged to the console
+                reporter.echo();
+            }
+
+            println!("Run success!");
+        }
+        Err(err) => panic!("Encountered the following error: {0}", err),
+    };
 
     Ok(())
 }

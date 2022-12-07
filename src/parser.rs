@@ -140,7 +140,7 @@ impl JArchiveDocumentParser {
                 let match_range = correct_answer_regex
                     .captures_iter(attribute)
                     .next()
-                    .unwrap()
+                    .expect("Could not find correct response regex match")
                     .get(0)
                     .unwrap()
                     .range();

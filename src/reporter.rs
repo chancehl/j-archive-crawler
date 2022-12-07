@@ -1,4 +1,4 @@
-use std::{error::Error, fs};
+use std::{fs, io};
 
 use serde::{Deserialize, Serialize};
 
@@ -17,10 +17,8 @@ impl Reporter {
     }
 
     /// Writes json report to disk
-    pub async fn write(self, loc: String) -> Result<(), Box<dyn Error>> {
-        fs::write(loc, self.json).expect("Could not write results to disk");
-
-        Ok(())
+    pub async fn write(self, loc: String) -> Result<(), io::Error> {
+        fs::write(loc, self.json)
     }
 
     /// Writes json output to console
