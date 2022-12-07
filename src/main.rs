@@ -3,37 +3,19 @@ mod parser;
 mod reporter;
 mod scraper;
 
-use crate::scraper::scrape;
+use crate::scraper::{JArchiveScraper, ScrapingError};
 use clap::Parser;
-use models::{CliArgs, JeopardyQuestion};
+use models::CliArgs;
 use reporter::Reporter;
-use std::error::Error;
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn Error>> {
+async fn main() -> Result<(), ScrapingError> {
     let args = CliArgs::parse();
 
-    let mut results: Vec<JeopardyQuestion> = Vec::new();
-
-    for i in args.episode_no..(args.episode_no + u32::from(args.iterations)) {
-        println!("> Scraping jeopardy questions for episode {0}", i);
-
-        match scrape(i).await? {
-            Some(questions) => {
-                println!(">> Successfully scraped questions episode {0}", i);
-
-                results.extend(questions.iter().cloned());
-            }
-            None => {
-                println!(
-                    ">> Failed to scrape questions for episode {0}. Skipping.",
-                    i
-                );
-
-                continue;
-            }
-        };
-    }
+    let results = JArchiveScraper::new()
+        .scrape(args.episode_no, args.iterations.into())
+        .await
+        .unwrap();
 
     if let Some(out) = args.outfile {
         Reporter::new(&results)
