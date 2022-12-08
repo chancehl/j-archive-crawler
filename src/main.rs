@@ -1,20 +1,18 @@
-mod errors;
+mod crawler;
 mod models;
 mod parser;
 mod reporter;
-mod scraper;
 
-use crate::scraper::JArchiveScraper;
 use clap::Parser;
-use errors::ScrapingError;
-use models::CliArgs;
+use crawler::{CrawlerError, JArchiveCrawler};
+use models::cli_args::CliArgs;
 use reporter::Reporter;
 
 #[tokio::main]
-async fn main() -> Result<(), ScrapingError> {
+async fn main() -> Result<(), CrawlerError> {
     let args = CliArgs::parse();
 
-    let results = JArchiveScraper::new()
+    let results = JArchiveCrawler::new()
         .scrape(args.episode_no, args.iterations.into())
         .await;
 

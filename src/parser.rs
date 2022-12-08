@@ -1,7 +1,7 @@
 use regex::Regex;
 use scraper::{ElementRef, Html, Selector};
 
-use crate::models::{JeopardyQuestion, JeopardyQuestionBuilder, Round};
+use crate::models::question::{JeopardyQuestion, JeopardyQuestionBuilder, Round};
 
 const NUM_CATEGORIES: usize = 6;
 

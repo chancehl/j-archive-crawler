@@ -1,7 +1,6 @@
-use clap::Parser;
-use serde::{Deserialize, Serialize};
+use std::fmt;
 
-use crate::errors::JeopardyQuestionBuilderError;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, PartialEq, Clone, Copy, Serialize, Deserialize)]
 pub enum Round {
@@ -94,20 +93,26 @@ impl JeopardyQuestionBuilder {
     }
 }
 
-/// Program to scrape jeopardy question data from j-archive.com
-#[derive(Parser, Debug)]
-#[command(author, version, about)]
-pub struct CliArgs {
-    /// The episode number to parse (note: if iteratons are applied, this will be the starting episode)
-    #[arg(short = 'e', long = "episode", default_value_t = 7515)]
-    // pick a more reasonable default, 7515 is 12/01/22 episode
-    pub episode_no: u32,
+#[derive(Debug, Clone)]
+pub struct JeopardyQuestionBuilderError {
+    pub msg: String,
+}
 
-    /// The number of iterations
-    #[arg(short = 'i', long = "iterations", default_value_t = 1)]
-    pub iterations: u8,
+impl fmt::Display for JeopardyQuestionBuilderError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "{}",
+            format!(
+                "Could not build jeopardy question from data: err={0}",
+                self.msg
+            )
+        )
+    }
+}
 
-    /// Where to write the results to
-    #[arg(short = 'o', long = "outfile")]
-    pub outfile: Option<String>,
+impl JeopardyQuestionBuilderError {
+    pub fn new(msg: impl Into<String>) -> JeopardyQuestionBuilderError {
+        JeopardyQuestionBuilderError { msg: msg.into() }
+    }
 }

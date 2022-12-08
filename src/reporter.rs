@@ -2,7 +2,7 @@ use std::{fs, io};
 
 use serde::{Deserialize, Serialize};
 
-use crate::models::JeopardyQuestion;
+use crate::models::question::JeopardyQuestion;
 
 #[derive(Serialize, Deserialize)]
 pub struct Reporter {
