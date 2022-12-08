@@ -71,11 +71,11 @@ impl JeopardyQuestionBuilder {
 
     /// Builds the object and returns it
     pub fn build(&self) -> Result<JeopardyQuestion, JeopardyQuestionBuilderError> {
-        let Some(prompt) = self.prompt.as_ref() else {
+        let Some(prompt) = &self.prompt else {
             return Err(JeopardyQuestionBuilderError::new("Missing prompt"));
         };
 
-        let Some(category) = self.category.as_ref() else {
+        let Some(category) = &self.category else {
             return Err(JeopardyQuestionBuilderError::new("Missing category"));
         };
 

@@ -1,33 +1,77 @@
 use regex::Regex;
 use scraper::{ElementRef, Html, Selector};
 
-use crate::models::question::{JeopardyQuestion, JeopardyQuestionBuilder, Round};
+use crate::models::{
+    episode::{JeopardyEpisode, JeopardyEpisodeBuilder},
+    question::{JeopardyQuestion, JeopardyQuestionBuilder, Round},
+    round::{JeopardyRound, JeopardyRoundBuilder},
+};
 
 const NUM_CATEGORIES: usize = 6;
 
 pub struct JArchiveDocumentParser {
     document: Html,
+    episode_no: u32,
 }
 
 impl JArchiveDocumentParser {
-    // Creates a new parser object
-    pub fn new(document: Html) -> Self {
-        JArchiveDocumentParser { document }
+    /// Creates a new parser object
+    pub fn new(document: Html, episode_no: u32) -> Self {
+        JArchiveDocumentParser {
+            document,
+            episode_no,
+        }
+    }
+
+    /// Parses the provided document into jeopardy episode data
+    pub fn parse(&self) -> JeopardyEpisode {
+        JeopardyEpisodeBuilder::new()
+            .set_id(self.episode_no)
+            .set_rounds(self.parse_rounds())
+            .set_air_date(self.parse_air_date())
+            .build()
+            .expect("Could not build jeopardy episode from the given data")
+    }
+
+    /// Parses the air date
+    fn parse_air_date(&self) -> String {
+        let air_date_selector = Selector::parse("#game_title h1").unwrap();
+
+        // TODO: refactor so this is less fragile
+        self.document
+            .select(&air_date_selector)
+            .next()
+            .expect("Could not locate air date on document")
+            .inner_html()
+            .split(" - ") // ex: Show #1234 - Wednesday, December 7th, 2022
+            .nth(1) // take what comes after the dash
+            .expect("Could not parse air date from episode title")
+            .to_owned()
     }
 
     /// Parses all rounds
-    pub fn parse_all_rounds(&self) -> Vec<JeopardyQuestion> {
-        let mut questions: Vec<JeopardyQuestion> = Vec::new();
+    fn parse_rounds(&self) -> (JeopardyRound, JeopardyRound, JeopardyRound) {
+        let mut round_builder = JeopardyRoundBuilder::new();
 
-        let jr_questions = &self.parse_questions(Round::Jeopardy);
-        let djr_questions = &self.parse_questions(Round::DoubleJeopardy);
-        let fjr_questions = &self.parse_questions(Round::FinalJeopardy);
+        let jeopardy_round = round_builder
+            .set_questions(self.parse_questions(Round::Jeopardy).to_vec())
+            .set_round(Round::Jeopardy)
+            .build()
+            .expect("Could not build jeopardy round from the provided data");
 
-        questions.extend(jr_questions.iter().cloned());
-        questions.extend(djr_questions.iter().cloned());
-        questions.extend(fjr_questions.iter().cloned());
+        let double_jeopardy_round = round_builder
+            .set_questions(self.parse_questions(Round::DoubleJeopardy))
+            .set_round(Round::DoubleJeopardy)
+            .build()
+            .expect("Could not build double jeopardy round from the provided data");
 
-        questions
+        let final_jeopardy_round = round_builder
+            .set_questions(self.parse_questions(Round::FinalJeopardy))
+            .set_round(Round::FinalJeopardy)
+            .build()
+            .expect("Could not build final jeopardy round from the provided data");
+
+        (jeopardy_round, double_jeopardy_round, final_jeopardy_round)
     }
 
     /// Parses categories

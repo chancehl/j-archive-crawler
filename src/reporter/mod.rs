@@ -2,7 +2,7 @@ use std::{fs, io};
 
 use serde::{Deserialize, Serialize};
 
-use crate::models::question::JeopardyQuestion;
+use crate::models::episode::JeopardyEpisode;
 
 #[derive(Serialize, Deserialize)]
 pub struct Reporter {
@@ -10,9 +10,9 @@ pub struct Reporter {
 }
 
 impl Reporter {
-    pub fn new(questions: &Vec<JeopardyQuestion>) -> Self {
+    pub fn new(episode: &Vec<JeopardyEpisode>) -> Self {
         Self {
-            json: serde_json::to_string_pretty(&questions).expect("Could not serialize questions"),
+            json: serde_json::to_string_pretty(&episode).expect("Could not serialize episode data"),
         }
     }
 
