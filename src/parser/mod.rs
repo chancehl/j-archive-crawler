@@ -140,9 +140,7 @@ impl JArchiveDocumentParser {
 
         for i in 0..prompts.len() {
             let prompt = &prompts[i];
-            let category_idx = i.rem_euclid(NUM_CATEGORIES);
-            let category = &categories[category_idx];
-
+            let category = &categories[i.rem_euclid(NUM_CATEGORIES)];
             let answer = self.parse_answer(table, i, round);
             let value = self.calculate_question_value(i, round);
 
