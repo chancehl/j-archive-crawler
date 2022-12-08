@@ -2,27 +2,54 @@ use std::{fs, io};
 
 use serde::{Deserialize, Serialize};
 
-use crate::models::episode::JeopardyEpisode;
+use crate::{
+    models::{episode::JeopardyEpisode, error::Error},
+    serializer::SerializerBuilder,
+};
 
 #[derive(Serialize, Deserialize)]
 pub struct Reporter {
-    json: String,
+    outfile: Option<String>,
 }
 
 impl Reporter {
-    pub fn new(episode: &Vec<JeopardyEpisode>) -> Self {
-        Self {
-            json: serde_json::to_string_pretty(&episode).expect("Could not serialize episode data"),
+    /// Writes json report to disk
+    pub async fn write(self, episodes: &Vec<JeopardyEpisode>) -> Result<(), io::Error> {
+        let json = SerializerBuilder::new()
+            .set_episodes(episodes.to_vec())
+            .build()
+            .expect("Could not build serializer from data")
+            .stringify_all();
+
+        if let Some(outfile) = self.outfile {
+            fs::write(outfile, json)
+        } else {
+            print!("{}", json);
+
+            Ok(())
         }
     }
+}
 
-    /// Writes json report to disk
-    pub async fn write(self, loc: String) -> Result<(), io::Error> {
-        fs::write(loc, self.json)
+#[derive(Default)]
+pub struct ReporterBuilder {
+    outfile: Option<String>,
+}
+
+impl ReporterBuilder {
+    pub fn new() -> Self {
+        ReporterBuilder::default()
     }
 
-    /// Writes json output to console
-    pub fn echo(self) {
-        println!("{}", self.json);
+    pub fn set_outfile(&mut self, outfile: Option<String>) -> &mut Self {
+        self.outfile = outfile;
+
+        self
+    }
+
+    pub fn build(&mut self) -> Result<Reporter, Error> {
+        Ok(Reporter {
+            outfile: self.outfile.to_owned(),
+        })
     }
 }

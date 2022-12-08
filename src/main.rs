@@ -2,11 +2,12 @@ mod crawler;
 mod models;
 mod parser;
 mod reporter;
+mod serializer;
 
 use clap::Parser;
 use crawler::{CrawlerError, JArchiveCrawler};
 use models::cli_args::CliArgs;
-use reporter::Reporter;
+use reporter::ReporterBuilder;
 
 #[tokio::main]
 async fn main() -> Result<(), CrawlerError> {
@@ -17,18 +18,16 @@ async fn main() -> Result<(), CrawlerError> {
         .await;
 
     match results {
-        Ok(questions) => {
-            let reporter = Reporter::new(&questions);
+        Ok(episodes) => {
+            let reporter = ReporterBuilder::new()
+                .set_outfile(args.outfile)
+                .build()
+                .expect("Could not build reporter");
 
-            if let Some(out) = args.outfile {
-                reporter
-                    .write(out)
-                    .await
-                    .expect("Unable to write results to outfile");
-            } else {
-                // if we don't provide an outfile, assume the user wants results logged to the console
-                reporter.echo();
-            }
+            reporter
+                .write(&episodes)
+                .await
+                .expect("Unable to write results to outfile");
 
             println!("Run success!");
         }

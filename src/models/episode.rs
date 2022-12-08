@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use super::{error::Error, round::JeopardyRound};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct JeopardyEpisode {
     pub air_date: String,
     pub rounds: (JeopardyRound, JeopardyRound, JeopardyRound),
