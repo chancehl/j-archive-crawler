@@ -38,25 +38,46 @@ Some initial example data has been written to the `./results/results.json` file 
 ```
 [
   {
-    "question": "A \"glow plug\" is used for cold starts in this engine that doesn't use spark plugs",
-    "category": "AUTOMOBILES",
-    "round": "Jeopardy",
-    "value": 200,
-    "answer": "a diesel"
-  },
-  {
-    "question": "Forming most of Vietnam's northwestern border, it's the only landlocked country in Southeast Asia",
-    "category": "RIVERS",
-    "round": "DoubleJeopardy",
-    "value": 2000,
-    "answer": "Laos"
-  },
-  {
-    "question": "Despite govt. predictions to the contrary, in 1985 this became the least populated U.S. state",
-    "category": "U.S. STATES",
-    "round": "FinalJeopardy",
-    "value": null,
-    "answer": "Wyoming"
+    "air_date": "Thursday, November 17, 2022",
+    "rounds": [
+      {
+        "questions": [
+          {
+            "prompt": "Tradition says the pilgrims set foot on this historic artifact on December 26, 1620",
+            "category": "HISTORIC DATES",
+            "round": "Jeopardy",
+            "value": 200,
+            "answer": "Plymouth Rock"
+          }
+        ],
+        "round": "Jeopardy"
+      },
+      {
+        "questions": [
+          {
+            "prompt": "It's a 2-seated pleasure carriage, perhaps \"with the fringe on top\"",
+            "category": "DOUBLE LETTERS IN THE MIDDLE",
+            "round": "DoubleJeopardy",
+            "value": 2000,
+            "answer": "a surrey"
+          },
+        ],
+        "round": "DoubleJeopardy"
+      },
+      {
+        "questions": [
+          {
+            "prompt": "Ridley Scott's first feature film, \"The Duellists\", was based on a story by this author to whom Scott's film \"Alien\" also pays tribute",
+            "category": "MOVIES &amp; LITERATURE",
+            "round": "FinalJeopardy",
+            "value": null,
+            "answer": "Joseph Conrad"
+          }
+        ],
+        "round": "FinalJeopardy"
+      }
+    ],
+    "id": 7515
   }
 ]
 ```
