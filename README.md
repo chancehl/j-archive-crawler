@@ -33,7 +33,7 @@ cargo run -- --outfile ./results.json
 
 # Example data
 
-Some initial example data has been written to the `./results/results.json` file that is included in this repository. This data was generated via `$ cargo run -- --outfile ./example/results.json --episode 6500 --iterations 50`.
+Some initial example data has been written to the `./results/results.json` file that is included in this repository. This data was generated via `$ cargo run -- --outfile ./example/results.json`.
 
 ```
 [
