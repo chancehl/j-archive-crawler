@@ -13,7 +13,7 @@ async fn main() -> Result<(), CrawlerError> {
     let args = CliArgs::parse();
 
     let results = JArchiveCrawler::new()
-        .scrape(args.episode_no, args.iterations.into())
+        .crawl(args.episode_no, args.iterations.into())
         .await;
 
     match results {

@@ -12,8 +12,8 @@ impl JArchiveCrawler {
         Default::default()
     }
 
-    /// Scrapes j-archive for jeopardy questions
-    pub async fn scrape(
+    /// Crawls j-archive for jeopardy questions
+    pub async fn crawl(
         self,
         episode_no: u32,
         iterations: u32,
@@ -38,7 +38,7 @@ impl JArchiveCrawler {
 
             let questions = JArchiveDocumentParser::new(document).parse_all_rounds();
 
-            println!(">> Successfully scraped questions episode {0}", i);
+            println!(">> Successfully parsed questions for episode {0}", i);
 
             results.extend(questions);
         }

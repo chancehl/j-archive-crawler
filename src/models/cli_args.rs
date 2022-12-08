@@ -1,6 +1,6 @@
 use clap::Parser;
 
-/// Program to scrape jeopardy question data from j-archive.com
+/// Program to crawl j-archive.com and parse jeopardy question data into json
 #[derive(Parser, Debug)]
 #[command(author, version, about)]
 pub struct CliArgs {

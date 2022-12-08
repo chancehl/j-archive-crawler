@@ -1,4 +1,4 @@
-# j-archive-scraper
+# j-archive-crawler
 
 This tool crawls [j-archive](https://j-archive.com/) to generate Jeopardy question in JSON format.
 
@@ -64,9 +64,9 @@ Some initial example data has been written to the `./results/results.json` file 
 # cli --help
 
 ```
-Program to scrape jeopardy question data from j-archive.com
+Program to crawl j-archive.com and parse jeopardy question data into json
 
-Usage: j-archive-scraper [OPTIONS]
+Usage: j-archive-crawler [OPTIONS]
 
 Options:
   -e, --episode <EPISODE_NO>     The episode number to parse (note: if iteratons are applied, this will be the starting episode) [default: 7515]

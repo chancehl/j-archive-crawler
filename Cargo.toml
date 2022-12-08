@@ -1,5 +1,5 @@
 [package]
-name = "j-archive-scraper"
+name = "j-archive-crawler"
 version = "0.1.0"
 edition = "2021"
 
