@@ -3,6 +3,7 @@ use scraper::{ElementRef, Html, Selector};
 
 use crate::models::{
     episode::{JeopardyEpisode, JeopardyEpisodeBuilder},
+    error::Error,
     question::{JeopardyQuestion, JeopardyQuestionBuilder, Round},
     round::{JeopardyRound, JeopardyRoundBuilder},
 };
@@ -24,13 +25,17 @@ impl JArchiveDocumentParser {
     }
 
     /// Parses the provided document into jeopardy episode data
-    pub fn parse(&self) -> JeopardyEpisode {
-        JeopardyEpisodeBuilder::new()
+    pub fn parse(&self) -> Result<JeopardyEpisode, Error> {
+        let Ok(rounds) = self.parse_rounds() else { 
+            return Err(Error::Static("Failed to parse episode data"));
+        };
+
+        Ok(JeopardyEpisodeBuilder::new()
             .set_id(self.episode_no)
-            .set_rounds(self.parse_rounds())
+            .set_rounds(rounds)
             .set_air_date(self.parse_air_date())
             .build()
-            .expect("Could not build jeopardy episode from the given data")
+            .expect("Could not build jeopardy episode from the given data"))
     }
 
     /// Parses the air date
@@ -50,28 +55,40 @@ impl JArchiveDocumentParser {
     }
 
     /// Parses all rounds
-    fn parse_rounds(&self) -> (JeopardyRound, JeopardyRound, JeopardyRound) {
+    fn parse_rounds(&self) -> Result<(JeopardyRound, JeopardyRound, JeopardyRound), Error> {
         let mut round_builder = JeopardyRoundBuilder::new();
 
+        let Ok(jeopardy_questions) = self.parse_questions(Round::DoubleJeopardy) else {
+            return Err(Error::Static("Could not parse jeopardy questions"));
+        };
+
+        let Ok(double_jeopardy_questions) = self.parse_questions(Round::DoubleJeopardy) else {
+            return Err(Error::Static("Could not parse double jeopardy questions"));
+        };
+
+        let Ok(final_jeopardy_question) = self.parse_questions(Round::FinalJeopardy) else {
+            return Err(Error::Static("Could not parse final jeopardy question"));
+        };
+
         let jeopardy_round = round_builder
-            .set_questions(self.parse_questions(Round::Jeopardy).to_vec())
+            .set_questions(jeopardy_questions)
             .set_round(Round::Jeopardy)
             .build()
             .expect("Could not build jeopardy round from the provided data");
 
         let double_jeopardy_round = round_builder
-            .set_questions(self.parse_questions(Round::DoubleJeopardy))
+            .set_questions(double_jeopardy_questions)
             .set_round(Round::DoubleJeopardy)
             .build()
             .expect("Could not build double jeopardy round from the provided data");
 
         let final_jeopardy_round = round_builder
-            .set_questions(self.parse_questions(Round::FinalJeopardy))
+            .set_questions(final_jeopardy_question)
             .set_round(Round::FinalJeopardy)
             .build()
             .expect("Could not build final jeopardy round from the provided data");
 
-        (jeopardy_round, double_jeopardy_round, final_jeopardy_round)
+        Ok((jeopardy_round, double_jeopardy_round, final_jeopardy_round))
     }
 
     /// Parses categories
@@ -128,10 +145,10 @@ impl JArchiveDocumentParser {
     }
 
     /// Parses raw jarchive HTML data into structured objects
-    fn parse_questions(&self, round: Round) -> Vec<JeopardyQuestion> {
-        let table = self
-            .parse_table(round)
-            .expect("Could not locate jeopardy table");
+    fn parse_questions(&self, round: Round) -> Result<Vec<JeopardyQuestion>, Error> {
+        let Some(table) = self.parse_table(round) else {
+            return Err(Error::Static("Could not locate jeopardy table"));
+        };
 
         let categories = self.parse_categories(table);
         let prompts = self.parse_prompts(table);
@@ -156,7 +173,7 @@ impl JArchiveDocumentParser {
             jeopardy_questions.push(question);
         }
 
-        return jeopardy_questions;
+        Ok(jeopardy_questions)
     }
 
     /// Parses an answer string from an element ref

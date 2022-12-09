@@ -36,11 +36,13 @@ impl JArchiveCrawler {
 
             let document = scraper::Html::parse_document(&raw_html);
 
-            let episode_data = JArchiveDocumentParser::new(document, episode).parse();
+            if let Ok(episode_data) = JArchiveDocumentParser::new(document, episode).parse() {
+                println!(">> Successfully parsed questions for episode {0}", episode);
 
-            println!(">> Successfully parsed questions for episode {0}", episode);
-
-            results.push(episode_data);
+                results.push(episode_data);
+            } else {
+                println!("[WARN] failed to parse jeopardy episode {0}", episode)
+            };
         }
 
         Ok(results)
