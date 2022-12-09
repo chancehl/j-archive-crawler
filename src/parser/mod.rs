@@ -39,19 +39,20 @@ impl JArchiveDocumentParser {
     }
 
     /// Parses the air date
-    fn parse_air_date(&self) -> String {
+    fn parse_air_date(&self) -> Option<String> {
         let air_date_selector = Selector::parse("#game_title h1").unwrap();
 
-        // TODO: refactor so this is less fragile
-        self.document
-            .select(&air_date_selector)
-            .next()
-            .expect("Could not locate air date on document")
-            .inner_html()
-            .split(" - ") // ex: Show #1234 - Wednesday, December 7th, 2022
-            .nth(1) // take what comes after the dash
-            .expect("Could not parse air date from episode title")
-            .to_owned()
+        let Some(air_date_element) = self.document.select(&air_date_selector).next() else {
+            return None;
+        };
+
+        let date = air_date_element.inner_html();
+
+        let Some(date) = date.split(" - ").nth(1) else {
+            return None;
+        };
+
+        Some(date.to_string())
     }
 
     /// Parses all rounds

@@ -4,7 +4,7 @@ use super::{error::Error, round::JeopardyRound};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct JeopardyEpisode {
-    pub air_date: String,
+    pub air_date: Option<String>,
     pub rounds: (JeopardyRound, JeopardyRound, JeopardyRound),
     pub id: u32,
 }
@@ -23,8 +23,8 @@ impl JeopardyEpisodeBuilder {
     }
 
     // Sets the air date
-    pub fn set_air_date(&mut self, air_date: impl Into<String>) -> &mut Self {
-        self.air_date = Some(air_date.into());
+    pub fn set_air_date(&mut self, air_date: Option<String>) -> &mut Self {
+        self.air_date = air_date;
 
         self
     }
@@ -56,13 +56,9 @@ impl JeopardyEpisodeBuilder {
             return Err(Error::Static("Missing rounds"));
         };
 
-        let Some(air_date) = &self.air_date else {
-            return Err(Error::Static("Missing air date"));
-        };
-
         Ok(JeopardyEpisode {
             id: id.to_owned(),
-            air_date: air_date.to_owned(),
+            air_date: self.air_date.to_owned(),
             rounds: rounds.to_owned(),
         })
     }
