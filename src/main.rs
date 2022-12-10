@@ -28,8 +28,6 @@ async fn main() -> Result<(), CrawlerError> {
                 .write(&episodes)
                 .await
                 .expect("Unable to write results to outfile");
-
-            println!("Run success!");
         }
         Err(err) => panic!("Encountered the following error: {0}", err),
     };

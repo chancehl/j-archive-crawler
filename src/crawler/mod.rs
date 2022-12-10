@@ -1,5 +1,6 @@
 use crate::models::episode::JeopardyEpisode;
 use crate::parser::JArchiveDocumentParser;
+use crate::reporter::ReporterBuilder;
 use std::error::Error;
 use std::fmt;
 
@@ -20,13 +21,22 @@ impl JArchiveCrawler {
     ) -> Result<Vec<JeopardyEpisode>, CrawlerError> {
         let mut results: Vec<JeopardyEpisode> = Vec::new();
 
-        for episode in episode_no..(episode_no + iterations) {
-            println!("> Scraping jeopardy questions for episode {0}", episode);
+        let episode_range = episode_no..(episode_no + iterations);
+        let total = episode_range.len();
+        let mut index = 0;
 
+        let reporter = ReporterBuilder::new().build().unwrap();
+
+        for episode in episode_range {
+            // Write proress to stdout
+            reporter.report_progress(episode, index, total).unwrap();
+
+            // Parse raw html
             let raw_html = JArchiveCrawler::get_html(episode).await.map_err(|_| {
                 CrawlerError::new(format!("Failed to get HTML for episode {0}", episode))
             })?;
 
+            // See if the
             if raw_html.contains(&format!("ERROR: No game {0} in database.", episode_no)) {
                 return Err(CrawlerError::new(format!(
                     "Missing episode {0} in JArchive database",
@@ -37,12 +47,15 @@ impl JArchiveCrawler {
             let document = scraper::Html::parse_document(&raw_html);
 
             if let Ok(episode_data) = JArchiveDocumentParser::new(document, episode).parse() {
-                println!(">> Successfully parsed questions for episode {0}", episode);
-
                 results.push(episode_data);
             } else {
-                println!("[WARN] failed to parse jeopardy episode {0}", episode)
+                println!(
+                    "Failed to scrape j-archive.com for jeopardy episode {0}",
+                    episode
+                )
             };
+
+            index = index + 1;
         }
 
         Ok(results)
