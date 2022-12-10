@@ -25,7 +25,9 @@ impl JArchiveCrawler {
         let total = episode_range.len();
         let mut index = 0;
 
-        let reporter = ReporterBuilder::new().build().unwrap();
+        let reporter = ReporterBuilder::new()
+            .build()
+            .expect("Could not build reporter with given data");
 
         for episode in episode_range {
             // Write proress to stdout
