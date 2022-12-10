@@ -47,7 +47,7 @@ impl Reporter {
         let modulo = curr.rem_euclid(symbols.len());
 
         let output = format!(" {} ", symbols[modulo]);
-        let formatted_episode_no = format!(" {} ({} / {})", episode_no, (curr + 1), total);
+        let formatted_episode_no = format!(" #{} ({} / {})", episode_no, (curr + 1), total);
 
         stdout()
             .execute(SavePosition)?
