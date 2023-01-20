@@ -25,7 +25,7 @@ impl Reporter {
             .set_episodes(episodes.to_vec())
             .build()
             .expect("Could not build serializer from data")
-            .stringify_all();
+            .to_json();
 
         if let Some(outfile) = self.outfile {
             fs::write(outfile, json)
