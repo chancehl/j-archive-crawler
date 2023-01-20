@@ -11,7 +11,7 @@ pub struct CliArgs {
 
     /// The number of iterations
     #[arg(short = 'i', long = "iterations", default_value_t = 1)]
-    pub iterations: u8,
+    pub iterations: u16,
 
     /// Where to write the results to
     #[arg(short = 'o', long = "outfile")]
