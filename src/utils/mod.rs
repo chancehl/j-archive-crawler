@@ -77,5 +77,13 @@ pub mod tests {
 
             assert_eq!(result, expected);
         }
+
+        #[test]
+        fn trims_str() {
+            let result = sanitize(" sotto vocce ");
+            let expected = "sotto vocce";
+
+            assert_eq!(result, expected);
+        }
     }
 }
