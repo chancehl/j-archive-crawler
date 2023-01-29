@@ -1,12 +1,12 @@
 use regex::Regex;
 use scraper::{ElementRef, Html, Selector};
 
-use crate::models::{
+use crate::{models::{
     episode::{JeopardyEpisode, JeopardyEpisodeBuilder},
     error::Error,
     question::{JeopardyQuestion, JeopardyQuestionBuilder, Round},
     round::{JeopardyRound, JeopardyRoundBuilder},
-};
+}};
 
 const NUM_CATEGORIES: usize = 6;
 
@@ -170,6 +170,8 @@ impl JArchiveDocumentParser {
                 .set_value(value)
                 .build()
                 .expect("Could not build jeopardy question model");
+
+            let question = question.sanitize();
 
             jeopardy_questions.push(question);
         }

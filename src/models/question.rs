@@ -2,6 +2,8 @@ use std::fmt;
 
 use serde::{Deserialize, Serialize};
 
+use crate::sanitizer::sanitizer::sanitize;
+
 #[derive(Debug, PartialEq, Clone, Copy, Serialize, Deserialize)]
 pub enum Round {
     Jeopardy,
@@ -16,6 +18,26 @@ pub struct JeopardyQuestion {
     pub round: Round,
     pub value: Option<u32>,
     pub answer: Option<String>,
+}
+
+impl JeopardyQuestion {
+    /// Sanitizes the parsed j-archive strings
+    pub fn sanitize(&self) -> JeopardyQuestion {
+        let sanitized_prompt = sanitize(&self.prompt);
+        let sanitized_cateogry = sanitize(&self.category);
+        let sanitized_answer = match &self.answer {
+            Some(value) => Some(sanitize(value)),
+            None => None,
+        };
+
+        JeopardyQuestion {
+            prompt: sanitized_prompt,
+            category: sanitized_cateogry,
+            round: self.round,
+            value: self.value,
+            answer: sanitized_answer,
+        }
+    }
 }
 
 #[derive(Default)]

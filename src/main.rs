@@ -2,6 +2,7 @@ mod crawler;
 mod models;
 mod parser;
 mod reporter;
+mod sanitizer;
 mod serializer;
 
 use clap::Parser;
