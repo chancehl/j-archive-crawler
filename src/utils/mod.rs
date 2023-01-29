@@ -1,12 +1,9 @@
 pub mod sanitizer {
     use regex::Regex;
 
-    pub enum StringReplacement<'a> {
-        EncodedValue { to: &'a str, from: &'a str },
-    }
-
-    pub enum PatternReplacement<'a> {
-        RegexValue { pattern: Regex, to: &'a str },
+    pub enum Replacement<'a> {
+        String { to: &'a str, from: &'a str },
+        Regex { pattern: Regex, to: &'a str },
     }
 
     /// Removes invalid characters & sequences from a string
@@ -14,38 +11,31 @@ pub mod sanitizer {
         let mut sanitized_string = s.to_owned();
 
         // remove encoded values
-        let encoded_values = vec![StringReplacement::EncodedValue {
-            to: "&",
-            from: "&amp;",
-        }];
-
-        for encoded_value in encoded_values {
-            sanitized_string = match encoded_value {
-                StringReplacement::EncodedValue { to, from } => sanitized_string.replace(from, to),
-            }
-        }
-
-        // remove invalid patterns
-        let invalid_patterns = vec![
-            PatternReplacement::RegexValue {
-                pattern: Regex::new(r"</.+>").unwrap(), // closing tags
+        let replacements = vec![
+            Replacement::String {
+                to: "&",
+                from: "&amp;", // encoded ampersand
+            },
+            Replacement::Regex {
+                pattern: Regex::new(r"</.+>").unwrap(), // closing html tags
                 to: " ",
             },
-            PatternReplacement::RegexValue {
-                pattern: Regex::new(r"<.+>").unwrap(),
+            Replacement::Regex {
+                pattern: Regex::new(r"<.+>").unwrap(), // opening html tags
                 to: " ",
             },
         ];
 
-        for invalid_pattern in invalid_patterns {
-            sanitized_string = match invalid_pattern {
-                PatternReplacement::RegexValue { to, pattern } => {
+        for replacement in replacements {
+            sanitized_string = match replacement {
+                Replacement::String { to, from } => sanitized_string.replace(from, to),
+                Replacement::Regex { pattern, to } => {
                     pattern.replace(&sanitized_string, to).to_string()
                 }
             }
         }
 
-        // Trim start, end of string
+        // trim start, end of string
         sanitized_string = sanitized_string.trim().to_string();
 
         sanitized_string
