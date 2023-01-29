@@ -2,8 +2,8 @@ mod crawler;
 mod models;
 mod parser;
 mod reporter;
-mod sanitizer;
 mod serializer;
+mod utils;
 
 use clap::Parser;
 use crawler::{CrawlerError, JArchiveCrawler};

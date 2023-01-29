@@ -24,16 +24,20 @@ pub mod sanitizer {
 
 #[cfg(test)]
 pub mod tests {
-    use super::sanitizer::sanitize;
 
-    #[test]
-    fn removes_html_encoded_values() {
-        let result = sanitize(
-            "He won the pentathlon &amp; the decathlon at the summer Olympics in Stockholm",
-        );
+    pub mod sanitize_tests {
+        use super::super::sanitizer::sanitize;
 
-        let expected = "He won the pentathlon & the decathlon at the summer Olympics in Stockholm";
+        #[test]
+        fn removes_html_encoded_values() {
+            let result = sanitize(
+                "He won the pentathlon &amp; the decathlon at the summer Olympics in Stockholm",
+            );
 
-        assert_eq!(result, expected);
+            let expected =
+                "He won the pentathlon & the decathlon at the summer Olympics in Stockholm";
+
+            assert_eq!(result, expected);
+        }
     }
 }
