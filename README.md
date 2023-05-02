@@ -1,8 +1,10 @@
 # j-archive-crawler
 
-This tool crawls [j-archive](https://j-archive.com/) to generate Jeopardy question in JSON format.
+**In April 2023 the maintainers of j-archive pushed a CR to no longer embed the correct responses into the HTML body. Now they have a mouseover effect which reads the correct answer from some internal cache. Meaning, as of right now, this tool is not functional. This repository will have to be updated sometime down the road to account for that. In the meantime, 7000+ episodes worth of questions are available for download [here](https://github.com/chancehl/JeopardyQuestions).**
 
-# Usage
+This tool crawls [j-archive](https://j-archive.com/) to generate Jeopardy question in JSON format. 
+
+## Usage
 
 Fetch questions for the latest Jeopardy episode
 
@@ -31,7 +33,7 @@ cargo run -- --outfile ./results.json
 # or cargo run -- -o ./results.json
 ```
 
-# Example data
+## Example data
 
 Some initial example data has been written to the `./results/results.json` file that is included in this repository. This data was generated via `$ cargo run -- --outfile ./example/results.json`.
 
@@ -82,7 +84,7 @@ Some initial example data has been written to the `./results/results.json` file 
 ]
 ```
 
-# cli --help
+## cli --help
 
 ```
 Program to crawl j-archive.com and parse jeopardy question data into json
