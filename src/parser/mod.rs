@@ -1,4 +1,3 @@
-use regex::Regex;
 use scraper::{ElementRef, Html, Selector};
 
 use crate::models::{
