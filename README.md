@@ -1,8 +1,10 @@
 # j-archive-crawler
 
-**In April 2023 the maintainers of j-archive pushed a CR to no longer embed the correct responses into the HTML body. Now they have a mouseover effect which reads the correct answer from some internal cache. Meaning, as of right now, this tool is not functional. This repository will have to be updated sometime down the road to account for that. In the meantime, 7000+ episodes worth of questions are available for download [here](https://github.com/chancehl/JeopardyQuestions).**
+Fixed :)
 
-This tool crawls [j-archive](https://j-archive.com/) to generate Jeopardy question in JSON format. 
+~~**In April 2023 the maintainers of j-archive pushed a CR to no longer embed the correct responses into the HTML body. Now they have a mouseover effect which reads the correct answer from some internal cache. Meaning, as of right now, this tool is not functional. This repository will have to be updated sometime down the road to account for that. In the meantime, 7000+ episodes worth of questions are available for download [here](https://github.com/chancehl/JeopardyQuestions).**~~
+
+This tool crawls [j-archive](https://j-archive.com/) to generate Jeopardy question in JSON format.
 
 ## Usage
 

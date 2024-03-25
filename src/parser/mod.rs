@@ -1,12 +1,12 @@
 use regex::Regex;
 use scraper::{ElementRef, Html, Selector};
 
-use crate::{models::{
+use crate::models::{
     episode::{JeopardyEpisode, JeopardyEpisodeBuilder},
     error::Error,
     question::{JeopardyQuestion, JeopardyQuestionBuilder, Round},
     round::{JeopardyRound, JeopardyRoundBuilder},
-}};
+};
 
 const NUM_CATEGORIES: usize = 6;
 
@@ -26,7 +26,7 @@ impl JArchiveDocumentParser {
 
     /// Parses the provided document into jeopardy episode data
     pub fn parse(&self) -> Result<JeopardyEpisode, Error> {
-        let Ok(rounds) = self.parse_rounds() else { 
+        let Ok(rounds) = self.parse_rounds() else {
             return Err(Error::Static("Failed to parse episode data"));
         };
 
@@ -59,7 +59,7 @@ impl JArchiveDocumentParser {
     fn parse_rounds(&self) -> Result<(JeopardyRound, JeopardyRound, JeopardyRound), Error> {
         let mut round_builder = JeopardyRoundBuilder::new();
 
-        let Ok(jeopardy_questions) = self.parse_questions(Round::DoubleJeopardy) else {
+        let Ok(jeopardy_questions) = self.parse_questions(Round::Jeopardy) else {
             return Err(Error::Static("Could not parse jeopardy questions"));
         };
 
@@ -137,7 +137,7 @@ impl JArchiveDocumentParser {
 
     /// Parses prompts
     fn parse_prompts(&self, fragment: ElementRef) -> Vec<String> {
-        let question_selector = Selector::parse("td.clue_text").unwrap();
+        let question_selector = Selector::parse("td.clue_text:first-of-type").unwrap();
 
         fragment
             .select(&question_selector)
@@ -158,7 +158,11 @@ impl JArchiveDocumentParser {
 
         for i in 0..prompts.len() {
             let prompt = &prompts[i];
-            let category = &categories[i.rem_euclid(NUM_CATEGORIES)];
+            let category = &categories[if categories.len() == 1 {
+                0
+            } else {
+                i.rem_euclid(NUM_CATEGORIES)
+            }];
             let answer = self.parse_answer(table, i, round);
             let value = self.calculate_question_value(i, round);
 
@@ -182,38 +186,13 @@ impl JArchiveDocumentParser {
     /// Parses an answer string from an element ref
     /// Note: For some reason unknown to me the regex crate does not support lookaheads...
     /// Just match this for now and we can strip off the values using string magic
-    fn parse_answer(&self, fragment: ElementRef, index: usize, round: Round) -> Option<String> {
-        let answer_selector = Selector::parse(if round != Round::FinalJeopardy {
-            "td.clue div"
-        } else {
-            "td.category div"
-        })
-        .unwrap();
+    fn parse_answer(&self, fragment: ElementRef, index: usize, _round: Round) -> Option<String> {
+        let correct_response_selector =
+            Selector::parse(".correct_response").expect("Failed to parse selector");
 
-        let node = fragment.select(&answer_selector).nth(index).unwrap();
-
-        // TODO: use this someday let correct_answer_regex = Regex::new(r#"(?<=<em class=\\"correct_response\\">).+(?=<\/em>)"#).unwrap();
-        let correct_answer_regex = Regex::new(r#"<em class="correct_response">.+</em>"#).unwrap();
-
-        match node.value().attr("onmouseover") {
-            Some(attribute) => {
-                // this seems very fragile
-                // TODO: refactor
-                let match_range = correct_answer_regex
-                    .captures_iter(attribute)
-                    .next()
-                    .expect("Could not find correct response regex match")
-                    .get(0)
-                    .unwrap()
-                    .range();
-
-                let answer = &attribute[match_range];
-                let answer = &answer.replace("<em class=\"correct_response\">", "");
-                let answer = &answer.replace("</em>", "");
-
-                Some(answer.to_string())
-            }
-            None => None,
-        }
+        fragment
+            .select(&correct_response_selector)
+            .nth(index)
+            .map(|element| element.text().collect::<Vec<_>>().join(""))
     }
 }
