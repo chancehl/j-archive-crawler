@@ -25,7 +25,18 @@ safe to pipe.
 
 Tests live inline under `#[cfg(test)]` in `src/utils/mod.rs`, `src/models/delay.rs` and `src/parser/mod.rs`; there is no `tests/` directory. Coverage is the sanitizer (`utils`), the delay sampler (`models::delay`), and the parser's failure paths (`parser`), the last of which build small HTML fixtures rather than hitting the network.
 
-`exec.sh` batch-crawls episodes 1-9000 in chunks of 500. Note it has two typos in its episode ranges (`-e 6601` labeled `5501_6000`, and `-e 75001` labeled `7501_8000`), so it does not actually cover what its filenames claim.
+`exec.sh` batch-crawls episodes 1-9538 in chunks of 500, overridable via `START`, `END`,
+`CHUNK`, `DELAY`, `JITTER` and `OUT` env vars. The chunk boundaries are derived from those
+values, not hand-written, so filenames always match the range actually crawled — they used
+to be written out by line and two chunks were silently mislabeled. Keep them derived. A
+chunk that fails entirely is collected and reported at the end rather than aborting the run.
+
+## Docs
+
+Keep `README.md` short and factual: how to run it, what comes out, what bites you. No
+marketing tone, no filler sections, no editorializing about the upstream site. Every
+claim must be traceable to the code, the CLI output, or an actual crawl — do not
+characterize j-archive, its maintainers, or anything else the repo does not state.
 
 ## Architecture
 
@@ -33,7 +44,7 @@ Single binary, no library target. The pipeline is linear:
 
 `main` → `JArchiveCrawler::crawl` → (per episode) `JArchiveDocumentParser::parse` → `JeopardyEpisode` → `Reporter::write` → `Serializer::to_json`
 
-- **crawler/** — owns the network loop. Fetches `j-archive.com/showgame.php?game_id={n}` with a bare `reqwest::get`, no user agent, rate limiting, retry, or concurrency. Iterating hits the live site once per episode, serially.
+- **crawler/** — owns the network loop. Fetches `j-archive.com/showgame.php?game_id={n}` through one shared `reqwest::Client` built per crawl, with an explicit User-Agent, connect/request timeouts, up to `MAX_ATTEMPTS` retries and a `CrawlDelay` between episodes. Still no concurrency: iterating hits the live site once per episode, serially. See **Context** below before touching any of it.
 - **parser/** — all the real logic. Turns one page's `scraper::Html` into an episode.
 - **models/** — data types, each with a hand-written builder (`set_*` returning `&mut Self`, then `build() -> Result<_, _>`).
 - **reporter/** — dual purpose: `report_progress` draws the crossterm spinner during the crawl, `write` emits final JSON. The crawler builds its own `Reporter` for progress while `main` builds a second one for output.

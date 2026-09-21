@@ -1,50 +1,49 @@
 # j-archive-crawler
 
-Fixed :)
+Scrapes [J! Archive](https://j-archive.com/) and dumps Jeopardy! episodes as JSON —
+every clue, its category, its value, and the correct response.
 
-~~**In April 2023 the maintainers of j-archive pushed a CR to no longer embed the correct responses into the HTML body. Now they have a mouseover effect which reads the correct answer from some internal cache. Meaning, as of right now, this tool is not functional. This repository will have to be updated sometime down the road to account for that. In the meantime, 7000+ episodes worth of questions are available for download [here](https://github.com/chancehl/JeopardyQuestions).**~~
+> In April 2023 J! Archive stopped embedding correct responses in the HTML body. That
+> broke this tool; it's since been fixed. If you just want the data, ~7,000 episodes are
+> pre-exported at [chancehl/JeopardyQuestions](https://github.com/chancehl/JeopardyQuestions).
 
-This tool crawls [j-archive](https://j-archive.com/) to generate Jeopardy question in JSON format.
+## Run it
 
-## Usage
-
-Fetch questions for the latest Jeopardy episode
-
-```
-cargo run
-```
-
-Fetch questions for a specific episode
-
-```
-cargo run -- --episode 7000
-# or cargo run -- -e 7000
+```bash
+cargo run -- -e 7515              # one episode, to stdout
+cargo run -- -e 9200 -i 10        # episodes 9200..9209
+cargo run -- -e 9200 -o out.json  # to a file
+cargo run -- -e 1 -i 500 -d 2000  # slower, for bulk
 ```
 
-Fetch questions for multiple episodes
+| Flag | | Default |
+|---|---|---|
+| `-e, --episode` | starting episode | 7515 |
+| `-i, --iterations` | how many consecutive episodes | 1 |
+| `-o, --outfile` | write here instead of stdout | — |
+| `-d, --delay` | base ms between fetches | 1000 |
+| `-j, --jitter` | extra random ms, `0..=j` | 500 |
 
-```
-cargo run -- --iterations 10
-# or cargo run -- -i 10
-```
+Episode numbers are J! Archive `game_id`s (the `N` in `showgame.php?game_id=N`). They
+aren't chronological — 7515 aired in 2022, 7517 in 1990.
 
-Save results to a file
+JSON goes to stdout, progress to stderr, so `> out.json` is safe.
 
-```
-cargo run -- --outfile ./results.json
-# or cargo run -- -o ./results.json
-```
+`exec.sh` crawls a big range in chunks, one file each. Defaults to 1..9538 by 500;
+override with `START`, `END`, `CHUNK`, `DELAY`, `JITTER`, `OUT`.
 
-## Example data
+## Output
 
-Some initial example data has been written to the `./results/results.json` file that is included in this repository. This data was generated via `$ cargo run -- --outfile ./example/results.json`.
+`{ id, air_date, rounds }`, where `rounds` is always exactly three — Jeopardy, Double
+Jeopardy, Final Jeopardy, in that order. Final Jeopardy holds one question, value `null`.
 
-```
+```json
 [
   {
     "air_date": "Thursday, November 17, 2022",
     "rounds": [
       {
+        "round": "Jeopardy",
         "questions": [
           {
             "prompt": "Tradition says the pilgrims set foot on this historic artifact on December 26, 1620",
@@ -53,32 +52,7 @@ Some initial example data has been written to the `./results/results.json` file 
             "value": 200,
             "answer": "Plymouth Rock"
           }
-        ],
-        "round": "Jeopardy"
-      },
-      {
-        "questions": [
-          {
-            "prompt": "It's a 2-seated pleasure carriage, perhaps \"with the fringe on top\"",
-            "category": "DOUBLE LETTERS IN THE MIDDLE",
-            "round": "DoubleJeopardy",
-            "value": 2000,
-            "answer": "a surrey"
-          },
-        ],
-        "round": "DoubleJeopardy"
-      },
-      {
-        "questions": [
-          {
-            "prompt": "Ridley Scott's first feature film, \"The Duellists\", was based on a story by this author to whom Scott's film \"Alien\" also pays tribute",
-            "category": "MOVIES &amp; LITERATURE",
-            "round": "FinalJeopardy",
-            "value": null,
-            "answer": "Joseph Conrad"
-          }
-        ],
-        "round": "FinalJeopardy"
+        ]
       }
     ],
     "id": 7515
@@ -86,17 +60,60 @@ Some initial example data has been written to the `./results/results.json` file 
 ]
 ```
 
-## cli --help
+Four full episodes in [`example/results.json`](./example/results.json), from
+`cargo run -- -e 7518 -i 4 -o ./example/results.json`.
+
+## Gotchas
+
+**Categories and values come from the clue's index, not the page.** Any gap — an
+unrevealed clue, a markup change upstream — shifts every clue after it onto the wrong
+category and value, with no error. Episode 7517 shows this: 26 revealed Double Jeopardy
+clues instead of 30, so from the 7th on, every category is off by one.
+
+**Three rounds or nothing.** Tiebreakers and partial pages fail the whole episode.
+
+**Sanitizing is rough.** Some markup survives, and media clues lose the media — you get
+`"This island seen  here  is about 30 miles south of Cape Cod"`.
+
+So bad output usually looks like *wrong* data, not a crash. If it breaks suddenly,
+diff the selector hit counts against a raw page before blaming the Rust.
+
+## Crawling behavior
+
+One request at a time, never concurrent. Waits `--delay` plus a random `0..=--jitter`
+between episodes; skipped before the first fetch and after the last, so single-episode
+runs aren't slowed. `-d 0 -j 0` turns it off.
+
+j-archive 403s any request without a `User-Agent`, so one is always sent. Requests retry
+3× with 2s/4s backoff under a 10s connect / 30s request timeout.
+
+A failed episode is recorded and the crawl continues; skips are summarized on stderr at
+the end. If *every* episode fails, the process exits non-zero instead of writing `[]`.
+
+## Development
+
+```bash
+cargo test
+cargo test trims_str
+cargo clippy
+```
+
+Tests are inline under `#[cfg(test)]` — no `tests/` directory. They cover the sanitizer
+(`utils`), the delay sampler (`models::delay`), and the parser's failure paths against
+small HTML fixtures.
 
 ```
-Program to crawl j-archive.com and parse jeopardy question data into json
-
-Usage: j-archive-crawler [OPTIONS]
-
-Options:
-  -e, --episode <EPISODE_NO>     The episode number to parse (note: if iteratons are applied, this will be the starting episode) [default: 7515]
-  -i, --iterations <ITERATIONS>  The number of iterations [default: 1]
-  -o, --outfile <OUTFILE>        Where to write the results to
-  -h, --help                     Print help information
-  -V, --version                  Print version information ./README.md
+src/
+  crawler/     fetch, retry, throttle, collect failures
+  parser/      HTML -> JeopardyEpisode; all the real logic
+  models/      data types + builders, CLI args, errors
+  reporter/    progress spinner (stderr), final JSON write
+  serializer/  serde_json wrapper
+  utils/       tag/entity sanitizer
 ```
+
+`main` → `crawl` → per episode `parse` → `JeopardyEpisode` → `write`.
+
+## License
+
+[MIT](./LICENSE) © Chance Linz
