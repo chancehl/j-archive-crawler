@@ -10,12 +10,20 @@ cargo run                          # crawls the default episode (7515), prints J
 cargo run -- -e 9200               # specific episode
 cargo run -- -e 9200 -i 10         # 10 consecutive episodes starting at 9200
 cargo run -- -e 9200 -o out.json   # write to file instead of stdout
+cargo run -- -e 1 -i 500 -d 2000 -j 500  # throttled bulk crawl
 cargo test
 cargo test trims_str               # single test by name
 cargo clippy
 ```
 
-Tests live inline in `src/utils/mod.rs` under `#[cfg(test)]`; there is no `tests/` directory. The only covered code is the sanitizer.
+`-d/--delay` (default 1000ms) and `-j/--jitter` (default 0..=500ms extra) set the
+wait between consecutive fetches. It is skipped before the first episode and
+after the last, so single-episode runs are unaffected; `-d 0 -j 0` disables it.
+
+Progress is written to **stderr** and JSON to **stdout**, so `... > out.json` is
+safe to pipe.
+
+Tests live inline in `src/utils/mod.rs` and `src/models/delay.rs` under `#[cfg(test)]`; there is no `tests/` directory. Coverage is limited to the sanitizer and the delay sampler.
 
 `exec.sh` batch-crawls episodes 1-9000 in chunks of 500. Note it has two typos in its episode ranges (`-e 6601` labeled `5501_6000`, and `-e 75001` labeled `7501_8000`), so it does not actually cover what its filenames claim.
 
@@ -54,9 +62,9 @@ The consequence: anything that shifts the index — an unrevealed clue on the bo
 
 Three unrelated error types coexist and do not compose: `models::error::Error` (thiserror, with a single `Static(&'static str)` variant), `CrawlerError` (hand-rolled, in `crawler/`), and `JeopardyQuestionBuilderError` (in `models/question.rs`). Errors are generally flattened into `Error::Static("...")` via `let Ok(x) = ... else`, which discards the underlying cause.
 
-Builders are called with `.expect(...)` throughout the parser, so a malformed page panics the process rather than skipping the episode. The one exception is in `crawler`, where a failed `parse()` prints a message and continues.
+The crawl loop is failure-tolerant by design: a request error, a missing episode, or a parse error is recorded in a `failures` list and the loop continues, so one bad episode cannot abandon a long run. Skips are summarised on stderr at the end. Preserve this when editing `crawl` — do not reintroduce `?` or an early `return` inside the loop. If *every* episode fails, `crawl` returns `Err` so a bulk run exits non-zero rather than writing an empty array.
 
-A known bug in `crawler/mod.rs`: the "No game in database" guard interpolates `episode_no` (the starting episode) instead of `episode` (the current one), so across a multi-episode run it only detects a missing episode on the first iteration. It also `return`s an `Err`, aborting the remaining episodes instead of skipping the missing one.
+**Builders still `.expect(...)` throughout the parser, so a genuinely malformed page panics the whole process instead of being recorded as a skip.** The likeliest panic is `parse_questions` indexing `categories[...]` when the category selector matched nothing. This is the main remaining risk for very large crawls.
 
 ### Sanitizer regexes are greedy
 

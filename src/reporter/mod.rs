@@ -1,6 +1,6 @@
 use std::{
     fs,
-    io::{self, stdout},
+    io::{self, stderr},
 };
 
 use crossterm::{
@@ -49,7 +49,8 @@ impl Reporter {
         let output = format!(" {} ", symbols[modulo]);
         let formatted_episode_no = format!(" #{} ({} / {})", episode_no, (curr + 1), total);
 
-        stdout()
+        // Progress goes to stderr so that JSON written to stdout stays parseable
+        stderr()
             .execute(SavePosition)?
             .execute(Clear(ClearType::CurrentLine))?
             .execute(SetForegroundColor(Color::Green))?

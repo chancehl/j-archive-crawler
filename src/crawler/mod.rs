@@ -25,6 +25,7 @@ impl JArchiveCrawler {
         delay: CrawlDelay,
     ) -> Result<Vec<JeopardyEpisode>, CrawlerError> {
         let mut results: Vec<JeopardyEpisode> = Vec::new();
+        let mut failures: Vec<(u32, String)> = Vec::new();
 
         let episode_range = episode_no..(episode_no + iterations);
         let total = episode_range.len();
@@ -43,32 +44,50 @@ impl JArchiveCrawler {
             // Write proress to stdout
             reporter.report_progress(episode, index, total).unwrap();
 
-            // Parse raw html
-            let raw_html = JArchiveCrawler::get_html(episode).await.map_err(|err| {
-                CrawlerError::new(format!(
-                    "Failed to get HTML for episode {0}: {1}",
-                    episode, err
-                ))
-            })?;
+            // A single bad episode must not abandon the rest of the crawl, so
+            // every failure below is recorded and skipped rather than returned.
 
-            // See if the
-            if raw_html.contains(&format!("ERROR: No game {0} in database.", episode_no)) {
-                return Err(CrawlerError::new(format!(
-                    "Missing episode {0} in JArchive database",
-                    episode
-                )));
+            // Parse raw html
+            let raw_html = match JArchiveCrawler::get_html(episode).await {
+                Ok(raw_html) => raw_html,
+                Err(err) => {
+                    failures.push((episode, format!("request failed: {0}", err)));
+                    continue;
+                }
+            };
+
+            // See if the episode exists in the archive at all
+            if raw_html.contains(&format!("ERROR: No game {0} in database.", episode)) {
+                failures.push((episode, "not in the j-archive database".to_string()));
+                continue;
             }
 
             let document = scraper::Html::parse_document(&raw_html);
 
-            if let Ok(episode_data) = JArchiveDocumentParser::new(document, episode).parse() {
-                results.push(episode_data);
-            } else {
-                println!(
-                    "Failed to scrape j-archive.com for jeopardy episode {0}",
-                    episode
-                )
+            match JArchiveDocumentParser::new(document, episode).parse() {
+                Ok(episode_data) => results.push(episode_data),
+                Err(err) => failures.push((episode, format!("parse failed: {0}", err))),
             };
+        }
+
+        // Report skips on stderr so they do not corrupt JSON written to stdout
+        if !failures.is_empty() {
+            eprintln!();
+            eprintln!("Skipped {0} of {1} episodes:", failures.len(), total);
+
+            for (episode, reason) in &failures {
+                eprintln!("  {0}: {1}", episode, reason);
+            }
+        }
+
+        // Nothing at all came back: treat that as a hard failure so a bulk run
+        // exits non-zero instead of quietly writing an empty array
+        if results.is_empty() && !failures.is_empty() {
+            return Err(CrawlerError::new(format!(
+                "All {0} episode(s) failed; first error: {1}",
+                failures.len(),
+                failures[0].1
+            )));
         }
 
         Ok(results)
