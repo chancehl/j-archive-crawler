@@ -74,6 +74,8 @@ The only remaining `unwrap()`s in `parser/` are `Selector::parse` on string lite
 
 ## Context
 
+`get_html` takes the shared `reqwest::Client` built once per crawl (connection reuse) and retries each episode up to `MAX_ATTEMPTS` with a 2s/4s backoff. **reqwest applies no timeout by default**, so `REQUEST_TIMEOUT` and `CONNECT_TIMEOUT` are set explicitly — without them a connection that opens and then goes silent hangs the whole crawl forever, with no error and no progress. This was observed in practice. Never build the client without them.
+
 **j-archive returns HTTP 403 to any request that omits a `User-Agent` header**, and `reqwest` omits one by default. `get_html` therefore sets an explicit UA; do not replace it with a bare `reqwest::get`. Note also that `get_html` does not check the response status, so a 403 (or any error page) is handed to the parser and surfaces as the misleading message "Failed to scrape j-archive.com for jeopardy episode N" rather than as an HTTP error.
 
 j-archive changed its markup in April 2023 to stop embedding correct responses in the HTML body; that was subsequently fixed here (see README). Because the parser depends on exact selectors and positional ordering, upstream markup changes are the most likely cause of a sudden breakage, and they tend to surface as wrong data rather than as a crash. When debugging, fetch the raw HTML for the episode and diff the selector hit counts (`td.clue_text:first-of-type`, `td.category td.category_name`, `.correct_response`) before assuming the bug is in Rust.

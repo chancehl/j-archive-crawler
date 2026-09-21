@@ -4,9 +4,20 @@ use crate::parser::JArchiveDocumentParser;
 use crate::reporter::ReporterBuilder;
 use std::error::Error;
 use std::fmt;
+use std::time::Duration;
 
 /// Sent with every request; j-archive rejects requests with no User-Agent.
 const USER_AGENT: &str = concat!("j-archive-crawler/", env!("CARGO_PKG_VERSION"));
+
+/// Ceiling on a single request. reqwest applies no timeout of its own, so
+/// without this a connection that opens and then goes quiet hangs forever.
+const REQUEST_TIMEOUT: Duration = Duration::from_secs(30);
+
+/// Ceiling on establishing the connection alone
+const CONNECT_TIMEOUT: Duration = Duration::from_secs(10);
+
+/// Attempts per episode before it is recorded as failed
+const MAX_ATTEMPTS: u32 = 3;
 
 #[derive(Default)]
 pub struct JArchiveCrawler;
@@ -34,6 +45,10 @@ impl JArchiveCrawler {
             .build()
             .expect("Could not build reporter with given data");
 
+        // One client for the whole crawl so connections are pooled and reused
+        let client = JArchiveCrawler::build_client()
+            .map_err(|err| CrawlerError::new(format!("could not build HTTP client: {0}", err)))?;
+
         for (index, episode) in episode_range.enumerate() {
             // Wait between requests so a long crawl does not hammer j-archive.
             // Skipped before the first episode and after the last.
@@ -48,7 +63,7 @@ impl JArchiveCrawler {
             // every failure below is recorded and skipped rather than returned.
 
             // Parse raw html
-            let raw_html = match JArchiveCrawler::get_html(episode).await {
+            let raw_html = match JArchiveCrawler::get_html(&client, episode).await {
                 Ok(raw_html) => raw_html,
                 Err(err) => {
                     failures.push((episode, format!("request failed: {0}", err)));
@@ -93,23 +108,49 @@ impl JArchiveCrawler {
         Ok(results)
     }
 
-    /// Gets the raw html for a page
-    pub async fn get_html(episode_no: u32) -> Result<String, Box<dyn Error>> {
+    /// Builds the shared HTTP client
+    ///
+    /// j-archive returns 403 for requests that send no User-Agent header,
+    /// which reqwest omits by default.
+    fn build_client() -> Result<reqwest::Client, reqwest::Error> {
+        reqwest::Client::builder()
+            .user_agent(USER_AGENT)
+            .timeout(REQUEST_TIMEOUT)
+            .connect_timeout(CONNECT_TIMEOUT)
+            .build()
+    }
+
+    /// Gets the raw html for a page, retrying transient failures
+    pub async fn get_html(
+        client: &reqwest::Client,
+        episode_no: u32,
+    ) -> Result<String, Box<dyn Error>> {
         let url = format!("https://j-archive.com/showgame.php?game_id={0}", episode_no);
 
-        // j-archive returns 403 for requests that send no User-Agent header,
-        // which reqwest omits by default.
-        let client = reqwest::Client::builder().user_agent(USER_AGENT).build()?;
+        let mut last_error: Option<Box<dyn Error>> = None;
 
-        let raw_html = client
-            .get(url)
-            .send()
-            .await?
-            .error_for_status()?
-            .text()
-            .await?;
+        for attempt in 1..=MAX_ATTEMPTS {
+            let result = match client.get(url.as_str()).send().await {
+                Ok(response) => match response.error_for_status() {
+                    Ok(response) => response.text().await.map_err(Box::<dyn Error>::from),
+                    Err(err) => Err(Box::<dyn Error>::from(err)),
+                },
+                Err(err) => Err(Box::<dyn Error>::from(err)),
+            };
 
-        Ok(raw_html)
+            match result {
+                Ok(raw_html) => return Ok(raw_html),
+                Err(err) => last_error = Some(err),
+            }
+
+            // Back off before another attempt: 2s, then 4s
+            if attempt < MAX_ATTEMPTS {
+                tokio::time::sleep(Duration::from_secs(1 << attempt)).await;
+            }
+        }
+
+        Err(last_error
+            .unwrap_or_else(|| Box::<dyn Error>::from("request failed for an unknown reason")))
     }
 }
 
