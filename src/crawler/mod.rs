@@ -1,3 +1,4 @@
+use crate::models::delay::CrawlDelay;
 use crate::models::episode::JeopardyEpisode;
 use crate::parser::JArchiveDocumentParser;
 use crate::reporter::ReporterBuilder;
@@ -21,18 +22,24 @@ impl JArchiveCrawler {
         self,
         episode_no: u32,
         iterations: u32,
+        delay: CrawlDelay,
     ) -> Result<Vec<JeopardyEpisode>, CrawlerError> {
         let mut results: Vec<JeopardyEpisode> = Vec::new();
 
         let episode_range = episode_no..(episode_no + iterations);
         let total = episode_range.len();
-        let mut index = 0;
 
         let reporter = ReporterBuilder::new()
             .build()
             .expect("Could not build reporter with given data");
 
-        for episode in episode_range {
+        for (index, episode) in episode_range.enumerate() {
+            // Wait between requests so a long crawl does not hammer j-archive.
+            // Skipped before the first episode and after the last.
+            if index > 0 && !delay.is_zero() {
+                tokio::time::sleep(delay.sample()).await;
+            }
+
             // Write proress to stdout
             reporter.report_progress(episode, index, total).unwrap();
 
@@ -62,8 +69,6 @@ impl JArchiveCrawler {
                     episode
                 )
             };
-
-            index = index + 1;
         }
 
         Ok(results)

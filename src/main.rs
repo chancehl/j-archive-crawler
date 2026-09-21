@@ -8,6 +8,7 @@ mod utils;
 use clap::Parser;
 use crawler::{CrawlerError, JArchiveCrawler};
 use models::cli_args::CliArgs;
+use models::delay::CrawlDelay;
 use reporter::ReporterBuilder;
 
 #[tokio::main]
@@ -15,7 +16,11 @@ async fn main() -> Result<(), CrawlerError> {
     let args = CliArgs::parse();
 
     let results = JArchiveCrawler::new()
-        .crawl(args.episode_no, args.iterations.into())
+        .crawl(
+            args.episode_no,
+            args.iterations.into(),
+            CrawlDelay::new(args.delay_ms, args.jitter_ms),
+        )
         .await;
 
     match results {

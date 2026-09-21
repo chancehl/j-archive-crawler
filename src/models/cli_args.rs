@@ -16,4 +16,12 @@ pub struct CliArgs {
     /// Where to write the results to
     #[arg(short = 'o', long = "outfile")]
     pub outfile: Option<String>,
+
+    /// Base delay between episode requests, in milliseconds
+    #[arg(short = 'd', long = "delay", default_value_t = 1000)]
+    pub delay_ms: u64,
+
+    /// Maximum extra random delay added to each request, in milliseconds
+    #[arg(short = 'j', long = "jitter", default_value_t = 500)]
+    pub jitter_ms: u64,
 }
