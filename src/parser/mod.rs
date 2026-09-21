@@ -134,6 +134,7 @@ impl JArchiveDocumentParser {
 
         let categories = self.parse_categories(table);
         let prompts = self.parse_prompts(table);
+        let answers = self.parse_answers(table);
 
         if prompts.is_empty() {
             return Err(Error::message(format!(
@@ -171,7 +172,7 @@ impl JArchiveDocumentParser {
                 )));
             };
 
-            let answer = self.parse_answer(table, index, round);
+            let answer = answers.get(index).cloned();
             let value = self.calculate_question_value(index, round);
 
             let question = JeopardyQuestionBuilder::new()
@@ -194,17 +195,19 @@ impl JArchiveDocumentParser {
         Ok(jeopardy_questions)
     }
 
-    /// Parses an answer string from an element ref
-    /// Note: For some reason unknown to me the regex crate does not support lookaheads...
-    /// Just match this for now and we can strip off the values using string magic
-    fn parse_answer(&self, fragment: ElementRef, index: usize, _round: Round) -> Option<String> {
+    /// Parses every correct response in a round, in board order.
+    ///
+    /// Collected in one pass and indexed by the caller. Selecting the nth match per
+    /// clue instead walked the round's DOM once for every clue, which is quadratic
+    /// and recompiled the selector each time.
+    fn parse_answers(&self, fragment: ElementRef) -> Vec<String> {
         let correct_response_selector =
             Selector::parse(".correct_response").expect("Failed to parse selector");
 
         fragment
             .select(&correct_response_selector)
-            .nth(index)
             .map(|element| element.text().collect::<Vec<_>>().join(""))
+            .collect()
     }
 }
 

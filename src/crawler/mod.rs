@@ -2,6 +2,7 @@ use crate::models::delay::CrawlDelay;
 use crate::models::episode::JeopardyEpisode;
 use crate::parser::JArchiveDocumentParser;
 use crate::reporter::ReporterBuilder;
+use crate::resume::ResumeLog;
 use std::error::Error;
 use std::fmt;
 use std::time::Duration;
@@ -34,12 +35,27 @@ impl JArchiveCrawler {
         episode_no: u32,
         iterations: u32,
         delay: CrawlDelay,
+        resume: &mut ResumeLog,
     ) -> Result<Vec<JeopardyEpisode>, CrawlerError> {
-        let mut results: Vec<JeopardyEpisode> = Vec::new();
+        // Anything a previous run already finished seeds the results, so those
+        // episodes are neither refetched nor missing from the output
+        let mut results: Vec<JeopardyEpisode> = resume.take_recovered();
         let mut failures: Vec<(u32, String)> = Vec::new();
 
         let episode_range = episode_no..(episode_no + iterations);
         let total = episode_range.len();
+
+        if !results.is_empty() {
+            eprintln!(
+                "Resuming: {0} of {1} episodes already crawled",
+                results.len(),
+                total
+            );
+        }
+
+        // Counts episodes actually fetched, so a resumed run does not wait
+        // before its first real request
+        let mut fetched = 0usize;
 
         let reporter = ReporterBuilder::new()
             .build()
@@ -50,11 +66,17 @@ impl JArchiveCrawler {
             .map_err(|err| CrawlerError::new(format!("could not build HTTP client: {0}", err)))?;
 
         for (index, episode) in episode_range.enumerate() {
+            if resume.is_done(episode) {
+                continue;
+            }
+
             // Wait between requests so a long crawl does not hammer j-archive.
             // Skipped before the first episode and after the last.
-            if index > 0 && !delay.is_zero() {
+            if fetched > 0 && !delay.is_zero() {
                 tokio::time::sleep(delay.sample()).await;
             }
+
+            fetched += 1;
 
             // Write proress to stdout
             reporter.report_progress(episode, index, total).unwrap();
@@ -80,10 +102,22 @@ impl JArchiveCrawler {
             let document = scraper::Html::parse_document(&raw_html);
 
             match JArchiveDocumentParser::new(document, episode).parse() {
-                Ok(episode_data) => results.push(episode_data),
+                Ok(episode_data) => {
+                    // A failure here is the disk, not the episode, and carrying on
+                    // would silently stop the run being resumable
+                    resume.record(&episode_data).map_err(|err| {
+                        CrawlerError::new(format!("could not write resume log: {0}", err))
+                    })?;
+
+                    results.push(episode_data);
+                }
                 Err(err) => failures.push((episode, format!("parse failed: {0}", err))),
             };
         }
+
+        // Recovered episodes come back before newly crawled ones, so sort to keep
+        // output in episode order however the run was split up
+        results.sort_by_key(|episode| episode.id);
 
         // Report skips on stderr so they do not corrupt JSON written to stdout
         if !failures.is_empty() {

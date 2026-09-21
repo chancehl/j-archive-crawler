@@ -1,9 +1,25 @@
 pub mod sanitizer {
     use regex::Regex;
+    use std::sync::OnceLock;
 
     pub enum Replacement<'a> {
         String { to: &'a str, from: &'a str },
-        Regex { pattern: Regex, to: &'a str },
+        Regex { pattern: &'static Regex, to: &'a str },
+    }
+
+    /// Compiling a regex is far more expensive than running one, and `sanitize` is
+    /// called for every prompt, category and answer -- roughly 180 times an episode.
+    /// Build each pattern once and hand out a reference to it.
+    fn closing_tag() -> &'static Regex {
+        static PATTERN: OnceLock<Regex> = OnceLock::new();
+
+        PATTERN.get_or_init(|| Regex::new(r"</.+>").unwrap())
+    }
+
+    fn opening_tag() -> &'static Regex {
+        static PATTERN: OnceLock<Regex> = OnceLock::new();
+
+        PATTERN.get_or_init(|| Regex::new(r"<.+>").unwrap())
     }
 
     /// Removes invalid characters & sequences from a string
@@ -17,11 +33,11 @@ pub mod sanitizer {
                 from: "&amp;", // encoded ampersand
             },
             Replacement::Regex {
-                pattern: Regex::new(r"</.+>").unwrap(), // closing html tags
+                pattern: closing_tag(), // closing html tags
                 to: " ",
             },
             Replacement::Regex {
-                pattern: Regex::new(r"<.+>").unwrap(), // opening html tags
+                pattern: opening_tag(), // opening html tags
                 to: " ",
             },
         ];

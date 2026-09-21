@@ -32,6 +32,22 @@ JSON goes to stdout, progress to stderr, so `> out.json` is safe.
 `exec.sh` crawls a big range in chunks, one file each. Defaults to 1..9538 by 500;
 override with `START`, `END`, `CHUNK`, `DELAY`, `JITTER`, `OUT`.
 
+## Resuming
+
+A full crawl takes about five hours, so with `-o` each finished episode is appended to
+`<outfile>.partial` as it lands. If the run dies, rerun the same command — it reads that
+file, skips what it already has, and fetches only the rest:
+
+```
+$ cargo run -- -e 1 -i 9538 -o out.json
+^C
+$ cargo run -- -e 1 -i 9538 -o out.json
+Resuming: 4021 of 9538 episodes already crawled
+```
+
+The log is deleted once `out.json` is written, so a run that finished will crawl again
+from scratch if you rerun it. Crawls to stdout can't be resumed.
+
 ## Output
 
 `{ id, air_date, rounds }`, where `rounds` is always exactly three — Jeopardy, Double
@@ -82,7 +98,8 @@ diff the selector hit counts against a raw page before blaming the Rust.
 
 One request at a time, never concurrent. Waits `--delay` plus a random `0..=--jitter`
 between episodes; skipped before the first fetch and after the last, so single-episode
-runs aren't slowed. `-d 0 -j 0` turns it off.
+runs aren't slowed. `-d 0 -j 0` turns it off. The delay dominates the runtime — parsing
+an episode takes ~1.2ms against ~1.9s of waiting and fetching.
 
 j-archive 403s any request without a `User-Agent`, so one is always sent. Requests retry
 3× with 2s/4s backoff under a 10s connect / 30s request timeout.
@@ -108,11 +125,12 @@ src/
   parser/      HTML -> JeopardyEpisode; all the real logic
   models/      data types + builders, CLI args, errors
   reporter/    progress spinner (stderr), final JSON write
+  resume/      append-only crash log for restartable crawls
   serializer/  serde_json wrapper
   utils/       tag/entity sanitizer
 ```
 
-`main` → `crawl` → per episode `parse` → `JeopardyEpisode` → `write`.
+`main` → `crawl` → per episode `parse` → `JeopardyEpisode` → `record` → `write`.
 
 ## License
 

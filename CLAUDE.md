@@ -11,6 +11,7 @@ cargo run -- -e 9200               # specific episode
 cargo run -- -e 9200 -i 10         # 10 consecutive episodes starting at 9200
 cargo run -- -e 9200 -o out.json   # write to file instead of stdout
 cargo run -- -e 1 -i 500 -d 2000 -j 500  # throttled bulk crawl
+cargo run -- -e 1 -i 500 -o out.json     # rerun after an interruption to resume
 cargo test
 cargo test trims_str               # single test by name
 cargo clippy
@@ -42,12 +43,13 @@ characterize j-archive, its maintainers, or anything else the repo does not stat
 
 Single binary, no library target. The pipeline is linear:
 
-`main` → `JArchiveCrawler::crawl` → (per episode) `JArchiveDocumentParser::parse` → `JeopardyEpisode` → `Reporter::write` → `Serializer::to_json`
+`main` → `JArchiveCrawler::crawl` → (per episode) `JArchiveDocumentParser::parse` → `JeopardyEpisode` → `ResumeLog::record` → `Reporter::write` → `Serializer::to_json` → `ResumeLog::finish`
 
 - **crawler/** — owns the network loop. Fetches `j-archive.com/showgame.php?game_id={n}` through one shared `reqwest::Client` built per crawl, with an explicit User-Agent, connect/request timeouts, up to `MAX_ATTEMPTS` retries and a `CrawlDelay` between episodes. Still no concurrency: iterating hits the live site once per episode, serially. See **Context** below before touching any of it.
 - **parser/** — all the real logic. Turns one page's `scraper::Html` into an episode.
 - **models/** — data types, each with a hand-written builder (`set_*` returning `&mut Self`, then `build() -> Result<_, _>`).
 - **reporter/** — dual purpose: `report_progress` draws the crossterm spinner during the crawl, `write` emits final JSON. The crawler builds its own `Reporter` for progress while `main` builds a second one for output.
+- **resume/** — append-only `<outfile>.partial` crash log, one compact JSON object per line. Seeds `crawl` with what a previous run finished and is deleted only after the real outfile is written. Disabled when output goes to stdout.
 - **serializer/** — thin `serde_json::to_string_pretty` wrapper.
 - **utils/sanitizer** — strips HTML tags and entities out of scraped strings.
 
@@ -73,15 +75,33 @@ The consequence: anything that shifts the index — an unrevealed clue on the bo
 
 Three error types coexist and do not compose: `models::error::Error` (thiserror; `Static(&'static str)` plus `Message(String)` for context-carrying failures, built via `Error::message(..)`), `CrawlerError` (hand-rolled, in `crawler/`), and `JeopardyQuestionBuilderError` (in `models/question.rs`).
 
-The crawl loop is failure-tolerant by design: a request error, a missing episode, or a parse error is recorded in a `failures` list and the loop continues, so one bad episode cannot abandon a long run. Skips are summarised on stderr at the end. Preserve this when editing `crawl` — do not reintroduce `?` or an early `return` inside the loop. If *every* episode fails, `crawl` returns `Err` so a bulk run exits non-zero rather than writing an empty array.
+The crawl loop is failure-tolerant by design: a request error, a missing episode, or a parse error is recorded in a `failures` list and the loop continues, so one bad episode cannot abandon a long run. Skips are summarised on stderr at the end. Preserve this when editing `crawl` — an *episode-level* failure must never `?` or `return` out of the loop. If *every* episode fails, `crawl` returns `Err` so a bulk run exits non-zero rather than writing an empty array.
+
+The one deliberate exception is `resume.record(..)`, which does `?` inside the loop. A failed write there is the disk, not the episode: the outfile is on the same disk and would fail too, so carrying on means burning hours before failing anyway, and the log would be missing entries the results still hold. Failing immediately is safe precisely because the partial log is already on disk — rerun the command and it picks up. Keep that distinction if you add more fallible calls: episode-shaped failures go in `failures`, infrastructure failures abort.
 
 The parser does not panic on bad page content. Every failure path returns `Error::Message` naming the episode, the round and the clue index, so a skip in a 9,000-episode run says what actually went wrong rather than just "failed to parse". When adding parsing code, keep this property: index with `.get()` and propagate with `?`, never `[...]` or `.expect(..)` on anything derived from the page.
 
 The only remaining `unwrap()`s in `parser/` are `Selector::parse` on string literals. Those can fail only from a typo in the selector itself, which would break every page immediately and be caught by the first test run, so they are left as-is.
 
+### Hot paths
+
+Parsing an episode costs ~1.2ms, against ~1.9s of fetch plus politeness delay, so parse
+speed is irrelevant to a crawl's wall clock. It got there from ~4.9ms by two fixes that
+are easy to undo by accident:
+
+- `parse_answers` collects every `.correct_response` in one pass. It used to be
+  `parse_answer(index)`, selecting the *nth* match per clue — a fresh DOM walk and a
+  fresh `Selector::parse` for all 30 clues in a round.
+- `utils::sanitizer` holds its two regexes in `OnceLock`s. They were compiled on every
+  call, and `sanitize` runs ~180 times an episode.
+
+Don't reach for concurrency to make a crawl faster. The time is the deliberate
+`CrawlDelay`, not the code; raising throughput means deciding to hit j-archive harder,
+which is a policy call, not an optimisation.
+
 ### Sanitizer regexes are greedy
 
-`utils::sanitizer` strips tags with `</.+>` and `<.+>`. These are greedy and unanchored, so a string with two separate tags loses everything between the first `<` and the last `>`. It also uses `replace` (single match) rather than `replace_all`. The existing tests only exercise single-tag inputs.
+`utils::sanitizer` strips tags with `</.+>` and `<.+>` (cached in `OnceLock`s; see **Hot paths**). These are greedy and unanchored, so a string with two separate tags loses everything between the first `<` and the last `>`. It also uses `replace` (single match) rather than `replace_all`. The existing tests only exercise single-tag inputs.
 
 ## Context
 
