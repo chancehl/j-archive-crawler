@@ -4,6 +4,9 @@ use crate::reporter::ReporterBuilder;
 use std::error::Error;
 use std::fmt;
 
+/// Sent with every request; j-archive rejects requests with no User-Agent.
+const USER_AGENT: &str = concat!("j-archive-crawler/", env!("CARGO_PKG_VERSION"));
+
 #[derive(Default)]
 pub struct JArchiveCrawler;
 
@@ -34,8 +37,11 @@ impl JArchiveCrawler {
             reporter.report_progress(episode, index, total).unwrap();
 
             // Parse raw html
-            let raw_html = JArchiveCrawler::get_html(episode).await.map_err(|_| {
-                CrawlerError::new(format!("Failed to get HTML for episode {0}", episode))
+            let raw_html = JArchiveCrawler::get_html(episode).await.map_err(|err| {
+                CrawlerError::new(format!(
+                    "Failed to get HTML for episode {0}: {1}",
+                    episode, err
+                ))
             })?;
 
             // See if the
@@ -67,7 +73,17 @@ impl JArchiveCrawler {
     pub async fn get_html(episode_no: u32) -> Result<String, Box<dyn Error>> {
         let url = format!("https://j-archive.com/showgame.php?game_id={0}", episode_no);
 
-        let raw_html = reqwest::get(url).await?.text().await?;
+        // j-archive returns 403 for requests that send no User-Agent header,
+        // which reqwest omits by default.
+        let client = reqwest::Client::builder().user_agent(USER_AGENT).build()?;
+
+        let raw_html = client
+            .get(url)
+            .send()
+            .await?
+            .error_for_status()?
+            .text()
+            .await?;
 
         Ok(raw_html)
     }
