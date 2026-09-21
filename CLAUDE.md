@@ -23,7 +23,7 @@ after the last, so single-episode runs are unaffected; `-d 0 -j 0` disables it.
 Progress is written to **stderr** and JSON to **stdout**, so `... > out.json` is
 safe to pipe.
 
-Tests live inline in `src/utils/mod.rs` and `src/models/delay.rs` under `#[cfg(test)]`; there is no `tests/` directory. Coverage is limited to the sanitizer and the delay sampler.
+Tests live inline under `#[cfg(test)]` in `src/utils/mod.rs`, `src/models/delay.rs` and `src/parser/mod.rs`; there is no `tests/` directory. Coverage is the sanitizer (`utils`), the delay sampler (`models::delay`), and the parser's failure paths (`parser`), the last of which build small HTML fixtures rather than hitting the network.
 
 `exec.sh` batch-crawls episodes 1-9000 in chunks of 500. Note it has two typos in its episode ranges (`-e 6601` labeled `5501_6000`, and `-e 75001` labeled `7501_8000`), so it does not actually cover what its filenames claim.
 
@@ -60,11 +60,13 @@ The consequence: anything that shifts the index — an unrevealed clue on the bo
 
 ### Error handling
 
-Three unrelated error types coexist and do not compose: `models::error::Error` (thiserror, with a single `Static(&'static str)` variant), `CrawlerError` (hand-rolled, in `crawler/`), and `JeopardyQuestionBuilderError` (in `models/question.rs`). Errors are generally flattened into `Error::Static("...")` via `let Ok(x) = ... else`, which discards the underlying cause.
+Three error types coexist and do not compose: `models::error::Error` (thiserror; `Static(&'static str)` plus `Message(String)` for context-carrying failures, built via `Error::message(..)`), `CrawlerError` (hand-rolled, in `crawler/`), and `JeopardyQuestionBuilderError` (in `models/question.rs`).
 
 The crawl loop is failure-tolerant by design: a request error, a missing episode, or a parse error is recorded in a `failures` list and the loop continues, so one bad episode cannot abandon a long run. Skips are summarised on stderr at the end. Preserve this when editing `crawl` — do not reintroduce `?` or an early `return` inside the loop. If *every* episode fails, `crawl` returns `Err` so a bulk run exits non-zero rather than writing an empty array.
 
-**Builders still `.expect(...)` throughout the parser, so a genuinely malformed page panics the whole process instead of being recorded as a skip.** The likeliest panic is `parse_questions` indexing `categories[...]` when the category selector matched nothing. This is the main remaining risk for very large crawls.
+The parser does not panic on bad page content. Every failure path returns `Error::Message` naming the episode, the round and the clue index, so a skip in a 9,000-episode run says what actually went wrong rather than just "failed to parse". When adding parsing code, keep this property: index with `.get()` and propagate with `?`, never `[...]` or `.expect(..)` on anything derived from the page.
+
+The only remaining `unwrap()`s in `parser/` are `Selector::parse` on string literals. Those can fail only from a typo in the selector itself, which would break every page immediately and be caught by the first test run, so they are left as-is.
 
 ### Sanitizer regexes are greedy
 

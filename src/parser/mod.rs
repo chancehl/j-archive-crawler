@@ -25,16 +25,13 @@ impl JArchiveDocumentParser {
 
     /// Parses the provided document into jeopardy episode data
     pub fn parse(&self) -> Result<JeopardyEpisode, Error> {
-        let Ok(rounds) = self.parse_rounds() else {
-            return Err(Error::Static("Failed to parse episode data"));
-        };
+        let rounds = self.parse_rounds()?;
 
-        Ok(JeopardyEpisodeBuilder::new()
+        JeopardyEpisodeBuilder::new()
             .set_id(self.episode_no)
             .set_rounds(rounds)
             .set_air_date(self.parse_air_date())
             .build()
-            .expect("Could not build jeopardy episode from the given data"))
     }
 
     /// Parses the air date
@@ -56,39 +53,21 @@ impl JArchiveDocumentParser {
 
     /// Parses all rounds
     fn parse_rounds(&self) -> Result<(JeopardyRound, JeopardyRound, JeopardyRound), Error> {
-        let mut round_builder = JeopardyRoundBuilder::new();
-
-        let Ok(jeopardy_questions) = self.parse_questions(Round::Jeopardy) else {
-            return Err(Error::Static("Could not parse jeopardy questions"));
-        };
-
-        let Ok(double_jeopardy_questions) = self.parse_questions(Round::DoubleJeopardy) else {
-            return Err(Error::Static("Could not parse double jeopardy questions"));
-        };
-
-        let Ok(final_jeopardy_question) = self.parse_questions(Round::FinalJeopardy) else {
-            return Err(Error::Static("Could not parse final jeopardy question"));
-        };
-
-        let jeopardy_round = round_builder
-            .set_questions(jeopardy_questions)
-            .set_round(Round::Jeopardy)
-            .build()
-            .expect("Could not build jeopardy round from the provided data");
-
-        let double_jeopardy_round = round_builder
-            .set_questions(double_jeopardy_questions)
-            .set_round(Round::DoubleJeopardy)
-            .build()
-            .expect("Could not build double jeopardy round from the provided data");
-
-        let final_jeopardy_round = round_builder
-            .set_questions(final_jeopardy_question)
-            .set_round(Round::FinalJeopardy)
-            .build()
-            .expect("Could not build final jeopardy round from the provided data");
+        let jeopardy_round = self.parse_round(Round::Jeopardy)?;
+        let double_jeopardy_round = self.parse_round(Round::DoubleJeopardy)?;
+        let final_jeopardy_round = self.parse_round(Round::FinalJeopardy)?;
 
         Ok((jeopardy_round, double_jeopardy_round, final_jeopardy_round))
+    }
+
+    /// Parses a single round
+    fn parse_round(&self, round: Round) -> Result<JeopardyRound, Error> {
+        let questions = self.parse_questions(round)?;
+
+        JeopardyRoundBuilder::new()
+            .set_questions(questions)
+            .set_round(round)
+            .build()
     }
 
     /// Parses categories
@@ -147,23 +126,53 @@ impl JArchiveDocumentParser {
     /// Parses raw jarchive HTML data into structured objects
     fn parse_questions(&self, round: Round) -> Result<Vec<JeopardyQuestion>, Error> {
         let Some(table) = self.parse_table(round) else {
-            return Err(Error::Static("Could not locate jeopardy table"));
+            return Err(Error::message(format!(
+                "episode {0}: no {1:?} table on the page",
+                self.episode_no, round
+            )));
         };
 
         let categories = self.parse_categories(table);
         let prompts = self.parse_prompts(table);
 
-        let mut jeopardy_questions: Vec<JeopardyQuestion> = Vec::new();
+        if prompts.is_empty() {
+            return Err(Error::message(format!(
+                "episode {0}: {1:?} table contains no clues",
+                self.episode_no, round
+            )));
+        }
 
-        for i in 0..prompts.len() {
-            let prompt = &prompts[i];
-            let category = &categories[if categories.len() == 1 {
+        if categories.is_empty() {
+            return Err(Error::message(format!(
+                "episode {0}: {1:?} table contains no categories",
+                self.episode_no, round
+            )));
+        }
+
+        let mut jeopardy_questions: Vec<JeopardyQuestion> = Vec::with_capacity(prompts.len());
+
+        for (index, prompt) in prompts.iter().enumerate() {
+            // A round normally lays out six categories across; a short or
+            // reordered board must not index past the end of the vector.
+            let category_index = if categories.len() == 1 {
                 0
             } else {
-                i.rem_euclid(NUM_CATEGORIES)
-            }];
-            let answer = self.parse_answer(table, i, round);
-            let value = self.calculate_question_value(i, round);
+                index.rem_euclid(NUM_CATEGORIES)
+            };
+
+            let Some(category) = categories.get(category_index) else {
+                return Err(Error::message(format!(
+                    "episode {0}: {1:?} clue {2} maps to category {3}, but only {4} were found",
+                    self.episode_no,
+                    round,
+                    index,
+                    category_index,
+                    categories.len()
+                )));
+            };
+
+            let answer = self.parse_answer(table, index, round);
+            let value = self.calculate_question_value(index, round);
 
             let question = JeopardyQuestionBuilder::new()
                 .set_answer(answer)
@@ -172,11 +181,14 @@ impl JArchiveDocumentParser {
                 .set_round(round)
                 .set_value(value)
                 .build()
-                .expect("Could not build jeopardy question model");
+                .map_err(|err| {
+                    Error::message(format!(
+                        "episode {0}: {1:?} clue {2}: {3}",
+                        self.episode_no, round, index, err
+                    ))
+                })?;
 
-            let question = question.sanitize();
-
-            jeopardy_questions.push(question);
+            jeopardy_questions.push(question.sanitize());
         }
 
         Ok(jeopardy_questions)
@@ -193,5 +205,127 @@ impl JArchiveDocumentParser {
             .select(&correct_response_selector)
             .nth(index)
             .map(|element| element.text().collect::<Vec<_>>().join(""))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::JArchiveDocumentParser;
+    use crate::models::question::Round;
+    use scraper::Html;
+
+    /// Builds a round container with the given categories and clues
+    fn round_html(id: &str, categories: &[&str], clues: &[&str]) -> String {
+        let categories = categories
+            .iter()
+            .map(|category| {
+                format!(
+                    "<td class=\"category\"><table><tr><td class=\"category_name\">{0}</td></tr></table></td>",
+                    category
+                )
+            })
+            .collect::<String>();
+
+        let clues = clues
+            .iter()
+            .map(|clue| format!("<tr><td class=\"clue_text\">{0}</td></tr>", clue))
+            .collect::<String>();
+
+        format!(
+            "<div id=\"{0}\"><table><tr>{1}</tr>{2}</table></div>",
+            id, categories, clues
+        )
+    }
+
+    fn parser_for(body: &str) -> JArchiveDocumentParser {
+        JArchiveDocumentParser::new(Html::parse_document(body), 1234)
+    }
+
+    #[test]
+    fn empty_document_is_an_error() {
+        assert!(parser_for("<html></html>").parse().is_err());
+    }
+
+    #[test]
+    fn missing_round_reports_which_round() {
+        let err = parser_for("<html></html>")
+            .parse_questions(Round::FinalJeopardy)
+            .unwrap_err()
+            .to_string();
+
+        assert!(err.contains("FinalJeopardy"), "unhelpful error: {0}", err);
+        assert!(err.contains("1234"), "error omits the episode: {0}", err);
+    }
+
+    #[test]
+    fn round_without_categories_is_an_error_not_a_panic() {
+        let html = round_html("jeopardy_round", &[], &["a clue"]);
+
+        let err = parser_for(&html)
+            .parse_questions(Round::Jeopardy)
+            .unwrap_err()
+            .to_string();
+
+        assert!(err.contains("no categories"), "unexpected error: {0}", err);
+    }
+
+    #[test]
+    fn round_without_clues_is_an_error_not_a_panic() {
+        let html = round_html("jeopardy_round", &["CATEGORY"], &[]);
+
+        let err = parser_for(&html)
+            .parse_questions(Round::Jeopardy)
+            .unwrap_err()
+            .to_string();
+
+        assert!(err.contains("no clues"), "unexpected error: {0}", err);
+    }
+
+    /// Previously panicked: ten clues index past a two-category board
+    #[test]
+    fn fewer_categories_than_clues_is_an_error_not_a_panic() {
+        let clues = ["c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9"];
+        let html = round_html("jeopardy_round", &["FIRST", "SECOND"], &clues);
+
+        let err = parser_for(&html)
+            .parse_questions(Round::Jeopardy)
+            .unwrap_err()
+            .to_string();
+
+        assert!(
+            err.contains("maps to category"),
+            "unexpected error: {0}",
+            err
+        );
+    }
+
+    #[test]
+    fn well_formed_round_maps_clues_to_categories_in_column_order() {
+        let categories = ["C0", "C1", "C2", "C3", "C4", "C5"];
+        let clues = ["q0", "q1", "q2", "q3", "q4", "q5", "q6"];
+        let html = round_html("jeopardy_round", &categories, &clues);
+
+        let questions = parser_for(&html).parse_questions(Round::Jeopardy).unwrap();
+
+        assert_eq!(questions.len(), 7);
+        assert_eq!(questions[0].category, "C0");
+        assert_eq!(questions[5].category, "C5");
+        // wraps to the next row, back to the first column
+        assert_eq!(questions[6].category, "C0");
+        assert_eq!(questions[0].value, Some(200));
+        assert_eq!(questions[6].value, Some(400));
+    }
+
+    #[test]
+    fn single_category_round_uses_it_for_every_clue() {
+        let html = round_html("final_jeopardy_round", &["ONLY"], &["the clue"]);
+
+        let questions = parser_for(&html)
+            .parse_questions(Round::FinalJeopardy)
+            .unwrap();
+
+        assert_eq!(questions.len(), 1);
+        assert_eq!(questions[0].category, "ONLY");
+        assert_eq!(questions[0].value, None);
     }
 }
